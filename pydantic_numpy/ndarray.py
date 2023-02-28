@@ -1,14 +1,19 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Mapping, Optional, Type, TypeVar
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Generic, Mapping, Optional, TypeVar
 
 import numpy as np
 from numpy._typing import NDArray as NativeNDArray
-from numpy.lib import NumpyVersion
 from pydantic import BaseModel, FilePath, validator
 from pydantic.fields import ModelField
 
+if TYPE_CHECKING:
+    from pydantic.typing import CallableGenerator
+
+
 T = TypeVar("T", bound=np.generic)
-# nd_array_type = np.ndarray if NumpyVersion(np.__version__) < "1.22.0" else np.ndarray[Any, T]
 
 
 class NPFileDesc(BaseModel):
@@ -16,18 +21,18 @@ class NPFileDesc(BaseModel):
     key: Optional[str] = None
 
     @validator("path")
-    def absolute(cls, value):
+    def absolute(cls, value: Path) -> Path:
         return value.resolve().absolute()
 
 
 class _CommonNDArray(NativeNDArray, ABC):
     @classmethod
     @abstractmethod
-    def validate(cls, val: Any, field: ModelField):
+    def validate(cls, val: Any, field: ModelField) -> NativeNDArray:
         ...
 
     @classmethod
-    def __modify_schema__(cls, field_schema, field: Optional[ModelField]):
+    def __modify_schema__(cls, field_schema: dict[str, Any], field: ModelField | None) -> None:
         if field and field.sub_fields:
             type_with_potential_subtype = f"np.ndarray[{field.sub_fields[0]}]"
         else:
@@ -35,11 +40,11 @@ class _CommonNDArray(NativeNDArray, ABC):
         field_schema.update({"type": type_with_potential_subtype})
 
     @classmethod
-    def __get_validators__(cls):
+    def __get_validators__(cls) -> CallableGenerator:
         yield cls.validate
 
-    @classmethod
-    def _validate(cls: Type, val: Any, field: ModelField) -> "PydanticNDArray":
+    @staticmethod
+    def field_validation(val: Any, field: ModelField) -> NativeNDArray:
         if isinstance(val, Mapping):
             val = NPFileDesc(**val)
 
@@ -78,7 +83,7 @@ class _CommonNDArray(NativeNDArray, ABC):
 class PydanticNDArray(Generic[T], _CommonNDArray):
     @classmethod
     def validate(cls, val: Any, field: ModelField) -> np.ndarray:
-        return cls._validate(val, field)
+        return cls.field_validation(val, field)
 
 
 class PydanticPotentialNDArray(Generic[T], _CommonNDArray):
@@ -87,7 +92,7 @@ class PydanticPotentialNDArray(Generic[T], _CommonNDArray):
     @classmethod
     def validate(cls, val: Any, field: ModelField) -> Optional[np.ndarray]:
         try:
-            return cls._validate(val, field)
+            return cls.field_validation(val, field)
         except ValueError:
             return None
 

@@ -1,6 +1,6 @@
+import pickle as pickle_pkg
 from pathlib import Path
 from typing import ClassVar, TypeVar
-import pickle as pickle_pkg
 
 import compress_pickle
 import numpy as np
@@ -26,8 +26,9 @@ class NumpyModel(BaseModel):
         return ndarray_field_to_array, other_field_to_value
 
     def dump(self, dump_directory_path: Path, compress: bool = True, pickle: bool = False) -> None:
-        assert not (self.Config.arbitrary_types_allowed and not pickle), \
-            "Arbitrary types are only supported in pickle mode"
+        assert not (
+            self.Config.arbitrary_types_allowed and not pickle
+        ), "Arbitrary types are only supported in pickle mode"
 
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
@@ -39,18 +40,17 @@ class NumpyModel(BaseModel):
             )
 
         if other_field_to_value:
-
             if pickle:
                 if compress:
                     compress_pickle.dump(
                         other_field_to_value,
                         dump_directory_path / self._dump_compressed_pickle_file_name,
-                        compression=self._dump_compression
+                        compression=self._dump_compression,
                     )
                 else:
                     with open(dump_directory_path / self._dump_pickle_file_name, "wb") as out_pickle:
                         pickle_pkg.dump(other_field_to_value, out_pickle)
-    
+
             else:
                 with open(dump_directory_path / self._dump_non_array_yaml_name, "w") as out_yaml:
                     yaml.dump(other_field_to_value, out_yaml)
