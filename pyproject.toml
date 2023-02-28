@@ -1,24 +1,24 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "1.4.0"
+version = "1.4.1"
 description = "Seamlessly integrate numpy arrays into pydantic models"
-authors = ["Christoph Heindl, Can H. Tartanoglu <canhtart@gmail.com>"]
+authors = ["Can H. Tartanoglu <canhtart@gmail.com>", "Christoph Heindl"]
 license = "MIT"
 
 readme = "README.md"
+repository = "https://github.com/caniko/pydantic-numpy"
+
 packages = [{include = "pydantic_numpy"}]
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.12"
-numpy = [
-    {version = "<1.22", python = "<3.8"},
-    {version = "^1.22", python = "^3.8"}
-]
+python = ">=3.8, <3.12"
+numpy = "*"
 pydantic = "*"
+compress-pickle = { version = "*", extras = ["lz4"] }
+pyyaml = "^6.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1.2"
-flake8 = "^4.0.1"
+pytest = "*"
 
 [tool.isort]
 profile = "black"

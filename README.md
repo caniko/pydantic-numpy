@@ -9,13 +9,11 @@ This library provides support for integrating numpy `np.ndarray`'s into pydantic
 For more examples see [test_ndarray.py](./tests/test_ndarray.py)
 
 ```python
-from pydantic import BaseModel
-
 import pydantic_numpy.dtype as pnd
-from pydantic_numpy import NDArray, NDArrayFp32
+from pydantic_numpy import NDArray, NDArrayFp32, NumpyModel
 
 
-class MyPydanticNumpyModel(BaseModel):
+class MyPydanticNumpyModel(NumpyModel):
     K: NDArray[pnd.float32]
     C: NDArrayFp32  # <- Shorthand for same type as K
 
@@ -29,6 +27,9 @@ cfg = MyPydanticNumpyModel(K={"path": "path_to/array.npz", "key": "K"})
 
 cfg.K
 # np.ndarray[np.float32]
+
+cfg.dump("path_to_dump")
+cfg.load("path_to_dump")
 ```
 
 ### Subfields
