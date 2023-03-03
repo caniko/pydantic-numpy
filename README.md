@@ -38,14 +38,6 @@ This package also comes with `pydantic_numpy.dtype`, which adds subtyping suppor
 
 ## Install
 
-Via github
-
-```shell
-pip install git+https://github.com/cheind/pydantic-numpy.git
-```
-
-Via PyPi (note that the package might be outdated)
-
 ```shell
 pip install pydantic-numpy
 ```

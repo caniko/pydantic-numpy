@@ -1,11 +1,13 @@
 import pickle as pickle_pkg
 from pathlib import Path
-from typing import ClassVar, TypeVar
+from typing import ClassVar, Dict, Tuple, TypeVar
 
 import compress_pickle
 import numpy as np
-import yaml
-from pydantic import BaseModel, DirectoryPath, validate_arguments
+from pydantic import BaseModel, DirectoryPath
+from ruamel.yaml import YAML
+
+yaml = YAML()
 
 
 class NumpyModel(BaseModel):
@@ -13,10 +15,15 @@ class NumpyModel(BaseModel):
     _dump_numpy_savez_file_name: ClassVar[str] = "arrays.npz"
     _dump_non_array_file_stem: ClassVar[str] = "object_info"
 
+    _directory_suffix: ClassVar[str] = ".pdnp"
+
+    @classmethod
+    def model_directory_path(cls, pre_model_path: DirectoryPath) -> DirectoryPath:
+        return pre_model_path.parent / f"{pre_model_path.stem}-{cls.__name__}{cls._directory_suffix}"
+
     @property
-    def _dump_numpy_split_dict(self) -> tuple[dict, dict]:
-        ndarray_field_to_array = {}
-        other_field_to_value = {}
+    def _dump_numpy_split_dict(self) -> Tuple[Dict, Dict]:
+        ndarray_field_to_array, other_field_to_value = {}, {}
         for k, v in self.dict().items():
             if isinstance(v, np.ndarray):
                 ndarray_field_to_array[k] = v
@@ -30,6 +37,7 @@ class NumpyModel(BaseModel):
             self.Config.arbitrary_types_allowed and not pickle
         ), "Arbitrary types are only supported in pickle mode"
 
+        dump_directory_path = self.model_directory_path(dump_directory_path)
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
         ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict
@@ -57,6 +65,8 @@ class NumpyModel(BaseModel):
 
     @classmethod
     def load(cls, object_directory_path: DirectoryPath) -> "NumpyModelVar":
+        object_directory_path = cls.model_directory_path(object_directory_path)
+
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
         if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():
@@ -66,7 +76,7 @@ class NumpyModel(BaseModel):
                 other_field_to_value = pickle_pkg.load(in_pickle)
         elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():
             with open(other_path, "r") as in_yaml:
-                other_field_to_value = yaml.full_load(in_yaml)
+                other_field_to_value = yaml.load(in_yaml)
         else:
             other_field_to_value = {}
 

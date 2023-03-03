@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "1.4.2"
+version = "1.4.3"
 description = "Seamlessly integrate numpy arrays into pydantic models"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>", "Christoph Heindl"]
 license = "MIT"
@@ -12,20 +12,24 @@ packages = [{include = "pydantic_numpy"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8, <3.12"
+compress-pickle = { version = "*", extras = ["lz4"] }
+ruamel-yaml = "^0.17.21"
+
 numpy = "*"
 pydantic = "*"
-compress-pickle = { version = "*", extras = ["lz4"] }
-pyyaml = "^6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
-
-[tool.isort]
-profile = "black"
+black = "*"
+isort = "*"
+pre-commit = "*"
 
 [tool.black]
 line-length = 120
-target-version = ["py310"]
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
