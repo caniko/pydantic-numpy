@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 from pydantic import ValidationError
@@ -22,13 +22,16 @@ class _BaseDType:
         yield cls.validate
 
     @classmethod
-    def validate(cls, val: Any, field: ModelField) -> "_BaseDType":
+    def validate(cls, val: Any, field: ModelField) -> "PdNpDtype":
         if field.sub_fields:
             msg = f"{cls.__name__} has no subfields"
             raise ValidationError(msg)
         if not isinstance(val, cls):
             return cls(val)
         return val
+
+
+PdNpDtype = TypeVar("PdNpDtype", bound=_BaseDType)
 
 
 class longdouble(np.longdouble, _BaseDType):
@@ -135,25 +138,30 @@ class csingle(np.csingle, _BaseDType):
 
 complex64 = csingle
 
+
+class npbool(np.bool_, _BaseDType):
+    pass
+
+
 # NDArray typings
 
-NDArrayFp128 = NDArray[float128]
-NDArrayFp64 = NDArray[float64]
-NDArrayFp32 = NDArray[float32]
-NDArrayFp16 = NDArray[float16]
+NDArrayInt64 = NDArray[int, int64]
+NDArrayInt32 = NDArray[int, int32]
+NDArrayInt16 = NDArray[int, int16]
+NDArrayInt8 = NDArray[int, int8]
 
-NDArrayInt64 = NDArray[int64]
-NDArrayInt32 = NDArray[int32]
-NDArrayInt16 = NDArray[int16]
-NDArrayInt8 = NDArray[int8]
+NDArrayUint64 = NDArray[int, uint64]
+NDArrayUint32 = NDArray[int, uint32]
+NDArrayUint16 = NDArray[int, uint16]
+NDArrayUint8 = NDArray[int, uint8]
 
-NDArrayUint64 = NDArray[uint64]
-NDArrayUint32 = NDArray[uint32]
-NDArrayUint16 = NDArray[uint16]
-NDArrayUint8 = NDArray[uint8]
+NDArrayFp128 = NDArray[float, float128]
+NDArrayFp64 = NDArray[float, float64]
+NDArrayFp32 = NDArray[float, float32]
+NDArrayFp16 = NDArray[float, float16]
 
-NDArrayComplex256 = NDArray[complex256]
-NDArrayComplex128 = NDArray[complex128]
-NDArrayComplex64 = NDArray[complex64]
+NDArrayComplex256 = NDArray[float, complex256]
+NDArrayComplex128 = NDArray[float, complex128]
+NDArrayComplex64 = NDArray[float, complex64]
 
-NDArrayBool = NDArray[bool]
+NDArrayBool = NDArray[bool, npbool]

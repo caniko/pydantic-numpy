@@ -34,7 +34,7 @@ class NumpyModel(BaseModel):
 
     def dump(self, dump_directory_path: Path, compress: bool = True, pickle: bool = False) -> None:
         assert not (
-            self.Config.arbitrary_types_allowed and not pickle
+                self.Config.arbitrary_types_allowed and not pickle
         ), "Arbitrary types are only supported in pickle mode"
 
         dump_directory_path = self.model_directory_path(dump_directory_path)

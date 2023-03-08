@@ -7,7 +7,8 @@ from numpy.testing import assert_allclose
 from pydantic import BaseModel, ValidationError
 
 import pydantic_numpy.dtype as pnd
-from pydantic_numpy import NDArray, NPFileDesc, PotentialNDArray
+from pydantic_numpy import NDArray
+from pydantic_numpy.ndarray import NPFileDesc, PotentialNDArray
 
 JSON_ENCODERS = {np.ndarray: lambda arr: arr.tolist()}
 
@@ -109,7 +110,7 @@ def test_optional_construction():
 
 def test_potential_array(tmpdir):
     class NDArrayPotential(BaseModel):
-        K: PotentialNDArray[pnd.float32]
+        K: PotentialNDArray[float, pnd.float32]
 
     np.savez(Path(tmpdir) / "data.npz", values=np.arange(5))
 

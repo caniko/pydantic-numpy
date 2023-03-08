@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Optional, TypeVar
 
 import numpy as np
-from numpy._typing import NDArray as NativeNDArray
 from pydantic import BaseModel, FilePath, validator
 from pydantic.fields import ModelField
 
@@ -13,26 +12,26 @@ if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator
 
 
-T = TypeVar("T", bound=np.generic)
-
-
 class NPFileDesc(BaseModel):
     path: FilePath = ...
-    key: Optional[str] = None
+    key: Optional[str]
 
-    @validator("path")
-    def absolute(cls, value: Path) -> Path:
+    @validator("path", allow_reuse=True)
+    def check_absolute(cls, value: Path) -> Path:
         return value.resolve().absolute()
 
 
-class _CommonNDArray(NativeNDArray, ABC):
+T = TypeVar("T")
+ScalarType = TypeVar("ScalarType", bound=np.generic, covariant=True)
+
+
+class BaseNDArrayType(Generic[T, ScalarType], np.ndarray[T, np.dtype[ScalarType]], ABC):
     @classmethod
-    @abstractmethod
-    def validate(cls, val: Any, field: ModelField) -> NativeNDArray:
-        ...
+    def __get_validators__(cls) -> CallableGenerator:
+        yield cls.validate
 
     @classmethod
-    def __modify_schema__(cls, field_schema: dict[str, Any], field: ModelField | None) -> None:
+    def __modify_schema__(cls, field_schema: dict[str, Any], field: Optional[ModelField]) -> None:
         if field and field.sub_fields:
             type_with_potential_subtype = f"np.ndarray[{field.sub_fields[0]}]"
         else:
@@ -40,11 +39,12 @@ class _CommonNDArray(NativeNDArray, ABC):
         field_schema.update({"type": type_with_potential_subtype})
 
     @classmethod
-    def __get_validators__(cls) -> CallableGenerator:
-        yield cls.validate
+    @abstractmethod
+    def validate(cls, val: Any, field: ModelField) -> np.ndarray[T, np.dtype[ScalarType]]:
+        ...
 
     @staticmethod
-    def field_validation(val: Any, field: ModelField) -> NativeNDArray:
+    def field_validation(val: Any, field: ModelField) -> np.ndarray[T, np.dtype[ScalarType]]:
         if isinstance(val, Mapping):
             val = NPFileDesc(**val)
 
@@ -70,27 +70,23 @@ class _CommonNDArray(NativeNDArray, ABC):
                     raise ValueError(f"Key {key} not found in npz.")
             else:
                 data = content
-
         else:
             data = val
 
-        if field.sub_fields is not None:
-            dtype_field = field.sub_fields[0]
-            return np.asarray(data, dtype=dtype_field.type_)
-        return np.asarray(data)
+        return np.asarray(data, dtype=field.sub_fields[1].type_) if field.sub_fields else np.asarray(data)
 
 
-class PydanticNDArray(Generic[T], _CommonNDArray):
+class PydanticNDArray(Generic[T, ScalarType], BaseNDArrayType[T, ScalarType]):
     @classmethod
-    def validate(cls, val: Any, field: ModelField) -> np.ndarray:
+    def validate(cls, val: Any, field: ModelField) -> np.ndarray[T, np.dtype[ScalarType]]:
         return cls.field_validation(val, field)
 
 
-class PydanticPotentialNDArray(Generic[T], _CommonNDArray):
+class PydanticPotentialNDArray(Generic[T, ScalarType], BaseNDArrayType[T, ScalarType]):
     """Like NDArray, but validation errors result in None."""
 
     @classmethod
-    def validate(cls, val: Any, field: ModelField) -> Optional[np.ndarray]:
+    def validate(cls, val: Any, field: ModelField) -> Optional[np.ndarray[T, np.dtype[ScalarType]]]:
         try:
             return cls.field_validation(val, field)
         except ValueError:
