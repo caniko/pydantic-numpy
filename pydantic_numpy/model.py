@@ -4,7 +4,7 @@ from typing import ClassVar, Dict, Tuple, TypeVar
 
 import compress_pickle
 import numpy as np
-from pydantic import BaseModel, DirectoryPath
+from pydantic import BaseModel, DirectoryPath, validate_arguments
 from ruamel.yaml import YAML
 
 yaml = YAML()
@@ -18,29 +18,21 @@ class NumpyModel(BaseModel):
     _directory_suffix: ClassVar[str] = ".pdnp"
 
     @classmethod
-    def model_directory_path(cls, pre_model_path: DirectoryPath) -> DirectoryPath:
+    @validate_arguments
+    def model_directory_path(cls, pre_model_path: Path) -> DirectoryPath:
+        if pre_model_path.stem.endswith(cls.__name__):
+            return pre_model_path
         return pre_model_path.parent / f"{pre_model_path.stem}-{cls.__name__}{cls._directory_suffix}"
-
-    @property
-    def _dump_numpy_split_dict(self) -> Tuple[Dict, Dict]:
-        ndarray_field_to_array, other_field_to_value = {}, {}
-        for k, v in self.dict().items():
-            if isinstance(v, np.ndarray):
-                ndarray_field_to_array[k] = v
-            else:
-                other_field_to_value[k] = v
-
-        return ndarray_field_to_array, other_field_to_value
 
     def dump(self, dump_directory_path: Path, compress: bool = True, pickle: bool = False) -> None:
         assert not (
-                self.Config.arbitrary_types_allowed and not pickle
+            self.Config.arbitrary_types_allowed and not pickle
         ), "Arbitrary types are only supported in pickle mode"
 
         dump_directory_path = self.model_directory_path(dump_directory_path)
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
-        ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict
+        ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict()
 
         if ndarray_field_to_array:
             (np.savez_compressed if compress else np.savez)(
@@ -81,6 +73,16 @@ class NumpyModel(BaseModel):
             other_field_to_value = {}
 
         return cls(**npz_file, **other_field_to_value)
+
+    def _dump_numpy_split_dict(self) -> Tuple[Dict, Dict]:
+        ndarray_field_to_array, other_field_to_value = {}, {}
+        for k, v in self.dict(exclude_unset=True).items():
+            if isinstance(v, np.ndarray):
+                ndarray_field_to_array[k] = v
+            else:
+                other_field_to_value[k] = v
+
+        return ndarray_field_to_array, other_field_to_value
 
     @classmethod
     @property

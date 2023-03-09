@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "2.0.0"
+version = "2.0.1"
 description = "Seamlessly integrate numpy arrays into pydantic models"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>", "Christoph Heindl"]
 license = "MIT"
