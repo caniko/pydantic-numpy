@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Optional, TypeVar
@@ -27,7 +25,7 @@ ScalarType = TypeVar("ScalarType", bound=np.generic, covariant=True)
 
 class BaseNDArrayType(Generic[T, ScalarType], np.ndarray[T, np.dtype[ScalarType]], ABC):
     @classmethod
-    def __get_validators__(cls) -> CallableGenerator:
+    def __get_validators__(cls) -> "CallableGenerator":
         yield cls.validate
 
     @classmethod

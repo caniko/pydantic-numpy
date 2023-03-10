@@ -25,8 +25,8 @@ class NumpyModel(BaseModel):
         return pre_model_path.parent / f"{pre_model_path.stem}-{cls.__name__}{cls._directory_suffix}"
 
     def dump(self, dump_directory_path: Path, compress: bool = True, pickle: bool = False) -> None:
-        assert not (
-            self.Config.arbitrary_types_allowed and not pickle
+        assert not self.__config__.arbitrary_types_allowed or (
+            self.__config__.arbitrary_types_allowed and pickle
         ), "Arbitrary types are only supported in pickle mode"
 
         dump_directory_path = self.model_directory_path(dump_directory_path)
