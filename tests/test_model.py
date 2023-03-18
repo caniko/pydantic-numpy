@@ -9,6 +9,7 @@ from pydantic_numpy import NDArray, NDArrayBool
 from pydantic_numpy.model import NumpyModel
 
 TEST_DUMP_PATH: Path = Path("../delete_me_test_dump").resolve()
+TEST_MODEL_OBJECT_ID = "test"
 
 
 class NumpyModelForTest(NumpyModel):
@@ -23,6 +24,8 @@ class TestWithArbitraryForTest(NumpyModelForTest):
         arbitrary_types_allowed = True
 
 
+vanilla_numpy_model = NumpyModelForTest.model_directory_path(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID)
+arbitrary_numpy_model = TestWithArbitraryForTest.model_directory_path(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID)
 numpy_bool_array: NDArrayBool = np.array([True, True, True, True, True], dtype=bool)
 
 
@@ -35,10 +38,12 @@ def numpy_model():
     return _numpy_model()
 
 
-@pytest.fixture(params=[
-    _numpy_model(),
-    TestWithArbitraryForTest(array=numpy_bool_array, non_array=5, my_arbitrary_slice=slice(0, 10))
-])
+@pytest.fixture(
+    params=[
+        _numpy_model(),
+        TestWithArbitraryForTest(array=numpy_bool_array, non_array=5, my_arbitrary_slice=slice(0, 10)),
+    ]
+)
 def numpy_model_with_arbitrary(request):
     return request.param
 
@@ -75,10 +80,8 @@ def _test_loaded_numpy_model(model: Union[NumpyModelForTest, TestWithArbitraryFo
 
 
 def _delete_leftovers():
-    dump_path = NumpyModelForTest.model_directory_path(TEST_DUMP_PATH)
-    if dump_path.exists():
-        shutil.rmtree(dump_path)
+    if vanilla_numpy_model.exists():
+        shutil.rmtree(vanilla_numpy_model)
 
-    dump_path = TestWithArbitraryForTest.model_directory_path(TEST_DUMP_PATH)
-    if dump_path.exists():
-        shutil.rmtree(dump_path)
+    if arbitrary_numpy_model.exists():
+        shutil.rmtree(arbitrary_numpy_model)
