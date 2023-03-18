@@ -1,6 +1,6 @@
 import pickle as pickle_pkg
 from pathlib import Path
-from typing import ClassVar, Dict, Tuple, TypeVar
+from typing import ClassVar, Dict, Tuple, TypeVar, Type, Iterable
 
 import compress_pickle
 import numpy as np
@@ -19,17 +19,17 @@ class NumpyModel(BaseModel):
 
     @classmethod
     @validate_arguments
-    def model_directory_path(cls, pre_model_path: Path) -> DirectoryPath:
-        if pre_model_path.stem.endswith(cls.__name__):
-            return pre_model_path
-        return pre_model_path.parent / f"{pre_model_path.stem}-{cls.__name__}{cls._directory_suffix}"
+    def model_directory_path(cls, output_directory: DirectoryPath, object_id: str) -> DirectoryPath:
+        return output_directory / f"{object_id}.{cls.__name__}{cls._directory_suffix}"
 
-    def dump(self, dump_directory_path: Path, compress: bool = True, pickle: bool = False) -> None:
+    def dump(
+        self, output_directory: Path, object_id: str, compress: bool = True, pickle: bool = False
+    ) -> DirectoryPath:
         assert not self.__config__.arbitrary_types_allowed or (
             self.__config__.arbitrary_types_allowed and pickle
         ), "Arbitrary types are only supported in pickle mode"
 
-        dump_directory_path = self.model_directory_path(dump_directory_path)
+        dump_directory_path = self.model_directory_path(output_directory, object_id)
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
         ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict()
@@ -55,9 +55,11 @@ class NumpyModel(BaseModel):
                 with open(dump_directory_path / self._dump_non_array_yaml_name, "w") as out_yaml:
                     yaml.dump(other_field_to_value, out_yaml)
 
+        return dump_directory_path
+
     @classmethod
-    def load(cls, object_directory_path: DirectoryPath) -> "NumpyModelVar":
-        object_directory_path = cls.model_directory_path(object_directory_path)
+    def load(cls, output_directory: DirectoryPath, object_id: str) -> "NumpyModelVar":
+        object_directory_path = cls.model_directory_path(output_directory, object_id)
 
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
@@ -102,3 +104,20 @@ class NumpyModel(BaseModel):
 
 NumpyModelVar = TypeVar("NumpyModelVar", bound=NumpyModel)
 NumpyModel.update_forward_refs(NumpyModelVar=NumpyModelVar)
+
+
+NumpyModelCLS = Type[NumpyModel]
+
+
+def model_agnostic_load(
+    output_directory: DirectoryPath, object_id: str, models: Iterable[NumpyModelCLS], not_found_error: bool = False
+) -> NumpyModelVar | None:
+    for model in models:
+        if model.model_directory_path(output_directory, object_id).exists():
+            return model.load(output_directory, object_id)
+    if not_found_error:
+        raise FileNotFoundError(
+            f"Could not find NumpyModel with {object_id} in {output_directory}."
+            f"Tried from following classes:\n{', '.join(model.__name__ for model in models)}"
+        )
+    return None
