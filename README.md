@@ -13,7 +13,7 @@ For more examples see [test_ndarray.py](./tests/test_ndarray.py)
 
 ```python
 import pydantic_numpy.dtype as pnd
-from pydantic_numpy import NDArray, NDArrayFp32, NumpyModel
+    from pydantic_numpy import NDArray, NDArrayFp32, NumpyModel, model_agnostic_load
 
 
 class MyPydanticNumpyModel(NumpyModel):
@@ -31,9 +31,11 @@ cfg = MyPydanticNumpyModel(K={"path": "path_to/array.npz", "key": "K"})
 cfg.K
 # np.ndarray[np.float32]
 
-cfg.dump("path_to_dump")
-cfg.load("path_to_dump")
+cfg.dump("path_to_dump_dir", "object_id")
+cfg.load("path_to_dump_dir", "object_id")
 ```
+
+`NumpyModel.load` requires the original mode, use `model_agnostic_load` when you have several models, and you want to load into a set of possible models.
 
 ### Data type (dtype) support!
 
