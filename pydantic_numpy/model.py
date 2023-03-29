@@ -1,10 +1,20 @@
 import pickle as pickle_pkg
 from pathlib import Path
-from typing import ClassVar, Dict, Tuple, TypeVar, Type, Iterable
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+)
 
 import compress_pickle
 import numpy as np
-from pydantic import BaseModel, DirectoryPath, validate_arguments
+from pydantic import BaseModel, DirectoryPath, FilePath, validate_arguments
 from ruamel.yaml import YAML
 
 yaml = YAML()
@@ -58,11 +68,17 @@ class NumpyModel(BaseModel):
         return dump_directory_path
 
     @classmethod
-    def load(cls, output_directory: DirectoryPath, object_id: str) -> "NumpyModelVar":
+    def load(
+        cls,
+        output_directory: DirectoryPath,
+        object_id: str,
+        pre_load_modifier: Optional[Callable[[dict[str, Any]], dict[str, Any]]] = None,
+    ) -> "NumpyModelVar":
         object_directory_path = cls.model_directory_path(output_directory, object_id)
 
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
+        other_path: FilePath
         if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():
             other_field_to_value = compress_pickle.load(other_path)
         elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():
@@ -74,7 +90,11 @@ class NumpyModel(BaseModel):
         else:
             other_field_to_value = {}
 
-        return cls(**npz_file, **other_field_to_value)
+        field_to_value = {**npz_file, **other_field_to_value}
+        if pre_load_modifier:
+            field_to_value = pre_load_modifier(field_to_value)
+
+        return cls(**field_to_value)
 
     def _dump_numpy_split_dict(self) -> Tuple[Dict, Dict]:
         ndarray_field_to_array, other_field_to_value = {}, {}
@@ -110,11 +130,15 @@ NumpyModelCLS = Type[NumpyModel]
 
 
 def model_agnostic_load(
-    output_directory: DirectoryPath, object_id: str, models: Iterable[NumpyModelCLS], not_found_error: bool = False
+    output_directory: DirectoryPath,
+    object_id: str,
+    models: Iterable[NumpyModelCLS],
+    not_found_error: bool = False,
+    **load_kwargs,
 ) -> NumpyModelVar | None:
     for model in models:
         if model.model_directory_path(output_directory, object_id).exists():
-            return model.load(output_directory, object_id)
+            return model.load(output_directory, object_id, **load_kwargs)
     if not_found_error:
         raise FileNotFoundError(
             f"Could not find NumpyModel with {object_id} in {output_directory}."

@@ -8,7 +8,7 @@ import pytest
 from pydantic_numpy import NDArray, NDArrayBool
 from pydantic_numpy.model import NumpyModel
 
-TEST_DUMP_PATH: Path = Path("../delete_me_test_dump").resolve()
+TEST_DUMP_PATH: Path = Path(__file__).absolute().parent / "delete_me_test_dump"
 TEST_MODEL_OBJECT_ID = "test"
 
 
@@ -24,8 +24,6 @@ class TestWithArbitraryForTest(NumpyModelForTest):
         arbitrary_types_allowed = True
 
 
-vanilla_numpy_model = NumpyModelForTest.model_directory_path(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID)
-arbitrary_numpy_model = TestWithArbitraryForTest.model_directory_path(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID)
 numpy_bool_array: NDArrayBool = np.array([True, True, True, True, True], dtype=bool)
 
 
@@ -48,40 +46,39 @@ def numpy_model_with_arbitrary(request):
     return request.param
 
 
-def test_io_yaml(numpy_model):
+def test_io_yaml(numpy_model: NumpyModel) -> None:
     try:
-        numpy_model.dump(TEST_DUMP_PATH)
-        _test_loaded_numpy_model(numpy_model.load(TEST_DUMP_PATH))
+        TEST_DUMP_PATH.mkdir(exist_ok=True)
+        numpy_model.dump(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID)
+        _test_loaded_numpy_model(numpy_model.load(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID))
     finally:
-        _delete_leftovers()
+        _delete_leftovers(numpy_model)
 
 
-def test_io_compressed_pickle(numpy_model_with_arbitrary):
+def test_io_compressed_pickle(numpy_model_with_arbitrary: NumpyModel) -> None:
     try:
-        numpy_model_with_arbitrary.dump(TEST_DUMP_PATH, pickle=True)
-        _test_loaded_numpy_model(numpy_model_with_arbitrary.load(TEST_DUMP_PATH))
+        TEST_DUMP_PATH.mkdir(exist_ok=True)
+        numpy_model_with_arbitrary.dump(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID, pickle=True)
+        _test_loaded_numpy_model(numpy_model_with_arbitrary.load(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID))
 
     finally:
-        _delete_leftovers()
+        _delete_leftovers(numpy_model_with_arbitrary)
 
 
-def test_io_pickle(numpy_model_with_arbitrary):
+def test_io_pickle(numpy_model_with_arbitrary: NumpyModel) -> None:
     try:
-        numpy_model_with_arbitrary.dump(TEST_DUMP_PATH, pickle=True, compress=False)
-        _test_loaded_numpy_model(numpy_model_with_arbitrary.load(TEST_DUMP_PATH))
+        TEST_DUMP_PATH.mkdir(exist_ok=True)
+        numpy_model_with_arbitrary.dump(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID, pickle=True, compress=False)
+        _test_loaded_numpy_model(numpy_model_with_arbitrary.load(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID))
     finally:
-        _delete_leftovers()
+        _delete_leftovers(numpy_model_with_arbitrary)
 
 
-def _test_loaded_numpy_model(model: Union[NumpyModelForTest, TestWithArbitraryForTest]):
+def _test_loaded_numpy_model(model: Union[NumpyModelForTest, TestWithArbitraryForTest]) -> None:
     assert np.all(model.array) and len(model.array) == 5
     if isinstance(model, TestWithArbitraryForTest):
         assert isinstance(model.my_arbitrary_slice, slice)
 
 
-def _delete_leftovers():
-    if vanilla_numpy_model.exists():
-        shutil.rmtree(vanilla_numpy_model)
-
-    if arbitrary_numpy_model.exists():
-        shutil.rmtree(arbitrary_numpy_model)
+def _delete_leftovers(model: NumpyModel) -> None:
+    shutil.rmtree(model.model_directory_path(TEST_DUMP_PATH, TEST_MODEL_OBJECT_ID))
