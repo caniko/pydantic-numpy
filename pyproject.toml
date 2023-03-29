@@ -1,12 +1,19 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "2.0.2"
+version = "2.2.1"
 description = "Seamlessly integrate numpy arrays into pydantic models"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>", "Christoph Heindl"]
 license = "MIT"
 
 readme = "README.md"
 repository = "https://github.com/caniko/pydantic-numpy"
+
+keywords = ["pydantic", "numpy", "typing"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent"
+]
 
 packages = [{include = "pydantic_numpy"}]
 
