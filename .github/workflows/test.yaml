@@ -1,0 +1,63 @@
+name: Python application test with GitHub Actions
+
+on:
+  push:
+    branches: [ trunk ]
+  pull_request:
+    branches: [ trunk ]
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup the Python Environment ${{ matrix.python-version }}
+        uses: Qwerty-133/python-setup@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          skip-pre-commit: true
+
+      - name: Install dependencies
+        run: |
+          poetry install --all-extras --with dev
+
+      - name: Run tests
+        run: |
+          poetry run pytest .
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  mypy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup the Python Environment ${{ matrix.python-version }}
+        uses: Qwerty-133/python-setup@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          skip-pre-commit: true
+
+      - name: Install dependencies
+        run: |
+          poetry install --all-extras --with dev --with ci
+
+      - name: Validate type-hints with MyPy
+        run: |
+          poetry run mypy --ignore-missing-imports \
+          --follow-imports=skip \
+          --strict-optional \
+          -p pydantic_numpy
