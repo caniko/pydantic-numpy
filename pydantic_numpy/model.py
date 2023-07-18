@@ -9,7 +9,8 @@ from typing import (
     Optional,
     Tuple,
     Type,
-    TypeVar, Union,
+    TypeVar,
+    Union,
 )
 
 import compress_pickle

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator
 
 
-class _BaseDType:
+class _BaseDType(object):
     @classmethod
     def __modify_schema__(cls, field_schema: dict[str, Any]) -> None:
         field_schema.update({"type": cls.__name__})

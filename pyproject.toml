@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "2.2.1"
+version = "2.2.2"
 description = "Seamlessly integrate numpy arrays into pydantic models"
-authors = ["Can H. Tartanoglu <canhtart@gmail.com>", "Christoph Heindl"]
+authors = ["Can H. Tartanoglu <python@rotas.mozmail.com>", "Christoph Heindl"]
 license = "MIT"
 
 readme = "README.md"
@@ -23,7 +23,7 @@ compress-pickle = { version = "*", extras = ["lz4"] }
 ruamel-yaml = "^0.17.21"
 
 numpy = "*"
-pydantic = "*"
+pydantic = "^1.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
