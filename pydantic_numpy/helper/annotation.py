@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import Any, Callable, ClassVar, Optional, Union
 
 import numpy as np
-import numpy.typing as npt
-from numpy.lib.npyio import NpzFile
 from numpy.typing import DTypeLike
 from pydantic import FilePath, GetJsonSchemaHandler, PositiveInt
 from pydantic.json_schema import JsonSchemaValue
