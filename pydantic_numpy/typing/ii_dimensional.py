@@ -14,12 +14,12 @@ Np2DArrayUint32 = np_array_pydantic_annotated_typing(data_type=np.uint32, dimens
 Np2DArrayUint16 = np_array_pydantic_annotated_typing(data_type=np.uint16, dimensions=2)
 Np2DArrayUint8 = np_array_pydantic_annotated_typing(data_type=np.uint8, dimensions=2)
 
-Np2DArrayFp128 = np_array_pydantic_annotated_typing(data_type=np.float128, dimensions=2)
+Np2DArrayFp128 = np_array_pydantic_annotated_typing(data_type=np.longdouble, dimensions=2)
 Np2DArrayFp64 = np_array_pydantic_annotated_typing(data_type=np.float64, dimensions=2)
 Np2DArrayFp32 = np_array_pydantic_annotated_typing(data_type=np.float32, dimensions=2)
 Np2DArrayFp16 = np_array_pydantic_annotated_typing(data_type=np.float16, dimensions=2)
 
-Np2DArrayComplex256 = np_array_pydantic_annotated_typing(data_type=np.complex256, dimensions=2)
+Np2DArrayComplex256 = np_array_pydantic_annotated_typing(data_type=np.clongdouble, dimensions=2)
 Np2DArrayComplex128 = np_array_pydantic_annotated_typing(data_type=np.complex128, dimensions=2)
 Np2DArrayComplex64 = np_array_pydantic_annotated_typing(data_type=np.complex64, dimensions=2)
 

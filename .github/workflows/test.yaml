@@ -6,13 +6,18 @@ on:
   pull_request:
     branches: [ trunk ]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   unit_tests:
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
         python-version: [ "3.9", "3.10", "3.11" ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
