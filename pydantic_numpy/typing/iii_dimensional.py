@@ -14,12 +14,12 @@ Np3DArrayUint32 = np_array_pydantic_annotated_typing(data_type=np.uint32, dimens
 Np3DArrayUint16 = np_array_pydantic_annotated_typing(data_type=np.uint16, dimensions=3)
 Np3DArrayUint8 = np_array_pydantic_annotated_typing(data_type=np.uint8, dimensions=3)
 
-Np3DArrayFp128 = np_array_pydantic_annotated_typing(data_type=np.longdouble, dimensions=3)
+Np3DArrayFpLongDouble = np_array_pydantic_annotated_typing(data_type=np.longdouble, dimensions=3)
 Np3DArrayFp64 = np_array_pydantic_annotated_typing(data_type=np.float64, dimensions=3)
 Np3DArrayFp32 = np_array_pydantic_annotated_typing(data_type=np.float32, dimensions=3)
 Np3DArrayFp16 = np_array_pydantic_annotated_typing(data_type=np.float16, dimensions=3)
 
-Np3DArrayComplex256 = np_array_pydantic_annotated_typing(data_type=np.clongdouble, dimensions=3)
+Np3DArrayComplexLongDouble = np_array_pydantic_annotated_typing(data_type=np.clongdouble, dimensions=3)
 Np3DArrayComplex128 = np_array_pydantic_annotated_typing(data_type=np.complex128, dimensions=3)
 Np3DArrayComplex64 = np_array_pydantic_annotated_typing(data_type=np.complex64, dimensions=3)
 
@@ -40,11 +40,11 @@ __all__ = [
     "Np3DArrayUint32",
     "Np3DArrayUint16",
     "Np3DArrayUint8",
-    "Np3DArrayFp128",
+    "Np3DArrayFpLongDouble",
     "Np3DArrayFp64",
     "Np3DArrayFp32",
     "Np3DArrayFp16",
-    "Np3DArrayComplex256",
+    "Np3DArrayComplexLongDouble",
     "Np3DArrayComplex128",
     "Np3DArrayComplex64",
     "Np3DArrayBool",

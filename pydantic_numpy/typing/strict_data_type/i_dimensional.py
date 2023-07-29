@@ -12,12 +12,14 @@ NpStrict1DArrayUint32 = np_array_pydantic_annotated_typing(data_type=np.uint32, 
 NpStrict1DArrayUint16 = np_array_pydantic_annotated_typing(data_type=np.uint16, dimensions=1, strict_data_typing=True)
 NpStrict1DArrayUint8 = np_array_pydantic_annotated_typing(data_type=np.uint8, dimensions=1, strict_data_typing=True)
 
-NpStrict1DArrayFp128 = np_array_pydantic_annotated_typing(data_type=np.longdouble, dimensions=1, strict_data_typing=True)
+NpStrict1DArrayFpLongDouble = np_array_pydantic_annotated_typing(
+    data_type=np.longdouble, dimensions=1, strict_data_typing=True
+)
 NpStrict1DArrayFp64 = np_array_pydantic_annotated_typing(data_type=np.float64, dimensions=1, strict_data_typing=True)
 NpStrict1DArrayFp32 = np_array_pydantic_annotated_typing(data_type=np.float32, dimensions=1, strict_data_typing=True)
 NpStrict1DArrayFp16 = np_array_pydantic_annotated_typing(data_type=np.float16, dimensions=1, strict_data_typing=True)
 
-NpStrict1DArrayComplex256 = np_array_pydantic_annotated_typing(
+NpStrict1DArrayComplexLongDouble = np_array_pydantic_annotated_typing(
     data_type=np.clongdouble, dimensions=1, strict_data_typing=True
 )
 NpStrict1DArrayComplex128 = np_array_pydantic_annotated_typing(
@@ -48,11 +50,11 @@ __all__ = [
     "NpStrict1DArrayUint32",
     "NpStrict1DArrayUint16",
     "NpStrict1DArrayUint8",
-    "NpStrict1DArrayFp128",
+    "NpStrict1DArrayFpLongDouble",
     "NpStrict1DArrayFp64",
     "NpStrict1DArrayFp32",
     "NpStrict1DArrayFp16",
-    "NpStrict1DArrayComplex256",
+    "NpStrict1DArrayComplexLongDouble",
     "NpStrict1DArrayComplex128",
     "NpStrict1DArrayComplex64",
     "NpStrict1DArrayBool",
