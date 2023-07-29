@@ -14,12 +14,12 @@ NpNDArrayUint32 = np_array_pydantic_annotated_typing(data_type=np.uint32)
 NpNDArrayUint16 = np_array_pydantic_annotated_typing(data_type=np.uint16)
 NpNDArrayUint8 = np_array_pydantic_annotated_typing(data_type=np.uint8)
 
-NpNDArrayFp128 = np_array_pydantic_annotated_typing(data_type=np.longdouble)
+NpNDArrayFpLongDouble = np_array_pydantic_annotated_typing(data_type=np.longdouble)
 NpNDArrayFp64 = np_array_pydantic_annotated_typing(data_type=np.float64)
 NpNDArrayFp32 = np_array_pydantic_annotated_typing(data_type=np.float32)
 NpNDArrayFp16 = np_array_pydantic_annotated_typing(data_type=np.float16)
 
-NpNDArrayComplex256 = np_array_pydantic_annotated_typing(data_type=np.clongdouble)
+NpNDArrayComplexLongDouble = np_array_pydantic_annotated_typing(data_type=np.clongdouble)
 NpNDArrayComplex128 = np_array_pydantic_annotated_typing(data_type=np.complex128)
 NpNDArrayComplex64 = np_array_pydantic_annotated_typing(data_type=np.complex64)
 
@@ -41,11 +41,11 @@ __all__ = [
     "NpNDArrayUint32",
     "NpNDArrayUint16",
     "NpNDArrayUint8",
-    "NpNDArrayFp128",
+    "NpNDArrayFpLongDouble",
     "NpNDArrayFp64",
     "NpNDArrayFp32",
     "NpNDArrayFp16",
-    "NpNDArrayComplex256",
+    "NpNDArrayComplexLongDouble",
     "NpNDArrayComplex128",
     "NpNDArrayComplex64",
     "NpNDArrayBool",
