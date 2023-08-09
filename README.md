@@ -44,17 +44,17 @@ cfg.dump("path_to_dump_dir", "object_id")
 cfg.load("path_to_dump_dir", "object_id")
 ```
 
-`NumpyModel.load` requires the original mode, use `model_agnostic_load` when you have several models that may be the right model:
+`NumpyModel.load` requires the original model:
+```python
+MyNumpyModel.load(<path>)
+```
+Use `model_agnostic_load` when you have several models that may be the correct model:
 ```python
 from pydantic_numpy.model.np_model import model_agnostic_load
 
 cfg.dump("path_to_dump_dir", "object_id")
 equals_cfg = model_agnostic_load("path_to_dump_dir", "object_id", models=[MyNumpyModel, MyDemoModel])
 ```
-
-### Data type (dtype) support!
-
-This package also comes with `pydantic_numpy.dtype`, which adds subtyping support such as `NpNDArray[float, pnd.float32]`. All subfields must be from this package as numpy dtypes have no Pydantic support, which is implemented in this package through the [generic class workflow](https://pydantic-docs.helpmanual.io/usage/types/#generic-classes-as-types).
 
 ### Install
 ```shell
