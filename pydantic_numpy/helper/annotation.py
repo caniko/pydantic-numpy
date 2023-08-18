@@ -77,16 +77,14 @@ class NpArrayPydanticAnnotation:
 
     @classmethod
     def __get_pydantic_json_schema__(
-        cls, _core_schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler
+        cls, _core_schema: core_schema.CoreSchema, _handler: GetJsonSchemaHandler
     ) -> JsonSchemaValue:
-        return handler(
-            dict(
-                type=(
-                    f"np.ndarray[{_int_to_dim_type[cls.dimensions] if cls.dimensions else 'Any'}, "
-                    f"{np.dtype[cls.data_type.__name__] if _data_type_resolver(cls.data_type) else cls.data_type}]"  # type: ignore[name-defined]
-                ),
-                strict_data_typing=cls.strict_data_typing,
-            )
+        return dict(
+            type=(
+                f"np.ndarray[{_int_to_dim_type[cls.dimensions] if cls.dimensions else 'Any'}, "
+                f"np.dtype[{cls.data_type.__name__ if _data_type_resolver(cls.data_type) else 'Any'}]"
+            ),
+            strict_data_typing=cls.strict_data_typing,
         )
 
 

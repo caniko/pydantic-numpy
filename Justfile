@@ -1,13 +1,13 @@
 
 
 format:
-	black .
-	isort .
-	ruff check . --fix
+	poetry run black .
+	poetry run isort .
+	poetry run ruff check . --fix
 	@echo "Formatting complete 🎉"
 
 mypy:
-	mypy --ignore-missing-imports \
+	poetry run mypy --ignore-missing-imports \
 	--follow-imports=skip \
 	--strict-optional \
 	-p pydantic_numpy
