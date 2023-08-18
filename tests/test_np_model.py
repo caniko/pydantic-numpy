@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from hypothesis.extra.numpy import arrays
 
 from pydantic_numpy.model import NumpyModel
 from pydantic_numpy.model.np_model import model_agnostic_load

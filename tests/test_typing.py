@@ -6,9 +6,6 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 import pytest
-from hypothesis.extra import numpy
-from hypothesis.extra.numpy import arrays
-from hypothesis import strategies as st, given
 from pydantic import ValidationError
 
 from pydantic_numpy.helper.validation import PydanticNumpyMultiArrayNumpyFileOnFilePath
