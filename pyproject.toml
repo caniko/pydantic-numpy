@@ -12,19 +12,19 @@ keywords = ["pydantic", "numpy", "typing"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Operating System :: OS Independent"
+    "Operating System :: OS Independent",
 ]
 
-packages = [{include = "pydantic_numpy"}]
+packages = [{ include = "pydantic_numpy" }]
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.12"
+python = ">=3.9"
 compress-pickle = { version = "*", extras = ["lz4"] }
-ruamel-yaml = "^0.17.21"
+ruamel-yaml = ">=0.17.21"
 
 numpy = ">=1.23.0"
-pydantic = "^2.0"
-semver = "^3.0.1"
+pydantic = ">=2.3"
+semver = ">=3.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
