@@ -20,7 +20,7 @@ class NumpyModelForTest(NumpyModel):
     non_array: int
 
 
-class TestWithArbitraryForTest(NumpyModelForTest, arbitrary_types_allowed=True):
+class _TestWithArbitraryForTest(NumpyModelForTest, arbitrary_types_allowed=True):
     my_arbitrary_slice: slice
 
 
@@ -40,7 +40,7 @@ def numpy_model():
 @pytest.fixture(
     params=[
         _numpy_model(),
-        TestWithArbitraryForTest(
+        _TestWithArbitraryForTest(
             array=_create_example_array(), non_array=NON_ARRAY_VALUE, my_arbitrary_slice=slice(0, 10)
         ),
     ]

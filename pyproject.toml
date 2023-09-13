@@ -52,6 +52,12 @@ line-length = 120
 ignore-init-module-imports = true
 ignore = ["F401", "F403", "F405"]
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::hypothesis.errors.NonInteractiveExampleWarning",
+    "ignore:invalid value encountered in multiply:RuntimeWarning",
+]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
