@@ -14,7 +14,7 @@ from pydantic_numpy.helper.validation import (
     validate_multi_array_numpy_file,
     validate_numpy_array_file,
 )
-from pydantic_numpy.model.multi_array import MultiArrayNumpyFile
+from pydantic_numpy.model import MultiArrayNumpyFile
 
 
 class NpArrayPydanticAnnotation:

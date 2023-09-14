@@ -49,8 +49,9 @@ cfg.load("path_to_dump_dir", "object_id")
 MyNumpyModel.load(<path>)
 ```
 Use `model_agnostic_load` when you have several models that may be the correct model:
+
 ```python
-from pydantic_numpy.model.np_model import model_agnostic_load
+from pydantic_numpy.model import model_agnostic_load
 
 cfg.dump("path_to_dump_dir", "object_id")
 equals_cfg = model_agnostic_load("path_to_dump_dir", "object_id", models=[MyNumpyModel, MyDemoModel])

@@ -29,7 +29,7 @@ def test_correct_type(numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions: O
 @pytest.mark.parametrize("wrong_numpy_type", supported_data_types)
 def test_wrong_dtype_type(numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions: Optional[int], wrong_numpy_type):
     if wrong_numpy_type == numpy_dtype:
-        return True
+        return
 
     bad_array = cached_hyp_array(wrong_numpy_type, dimensions).example()
     with pytest.raises(ValidationError):

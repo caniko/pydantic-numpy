@@ -1,4 +1,6 @@
 import pickle as pickle_pkg
+from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, ClassVar, Iterable, Optional
 
@@ -11,6 +13,28 @@ from ruamel.yaml import YAML
 from pydantic_numpy.util import np_general_all_close
 
 yaml = YAML()
+
+
+@dataclass(frozen=True)
+class MultiArrayNumpyFile:
+    path: FilePath
+    key: str
+    cached_load: bool = False
+
+    def load(self) -> npt.NDArray:
+        """
+        Load the NDArray stored in the given path within the given key
+
+        Returns
+        -------
+        NDArray
+        """
+        loaded = _cached_np_array_load(self.path) if self.cached_load else np.load(self.path)
+        try:
+            return loaded[self.key]
+        except IndexError:
+            msg = f"The given path points to an uncompressed numpy file, which only has one array in it: {self.path}"
+            raise AttributeError(msg)
 
 
 class NumpyModel(BaseModel):
@@ -200,6 +224,23 @@ def model_agnostic_load(
     return None
 
 
+@lru_cache
+def _cached_np_array_load(path: FilePath):
+    """
+    Store the loaded numpy object within LRU cache in case we need it several times
+
+    Parameters
+    ----------
+    path: FilePath
+        Path to the numpy file
+
+    Returns
+    -------
+    Same as np.load
+    """
+    return np.load(path)
+
+
 def _compare_np_array_dicts(
     dict_a: dict[str, npt.NDArray], dict_b: dict[str, npt.NDArray], rtol: float = 1e-05, atol: float = 1e-08
 ) -> bool:
@@ -233,4 +274,4 @@ def _compare_np_array_dicts(
     return True
 
 
-__all__ = ["NumpyModel", "model_agnostic_load"]
+__all__ = ["NumpyModel", "MultiArrayNumpyFile", "model_agnostic_load"]
