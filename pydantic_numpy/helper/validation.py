@@ -6,7 +6,7 @@ from numpy import floating, integer
 from numpy.lib.npyio import NpzFile
 from pydantic import FilePath
 
-from pydantic_numpy.model.multi_array import MultiArrayNumpyFile
+from pydantic_numpy.model import MultiArrayNumpyFile
 
 
 class PydanticNumpyMultiArrayNumpyFileOnFilePath(Exception):
