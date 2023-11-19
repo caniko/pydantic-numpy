@@ -1,9 +1,18 @@
 # pydantic-numpy
 
+![Python 3.9-3.12](https://img.shields.io/badge/python-3.9--3.12-blue.svg)
+[![Packaged with Poetry](https://img.shields.io/badge/packaging-poetry-cyan.svg)](https://python-poetry.org/)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)
+![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
+
+
 Package that integrates NumPy Arrays into Pydantic!
 
 - `pydantic_numpy.typing` provides many typings such as `NpNDArrayFp64`, `Np3DArrayFp64` (float64 that must be 3D)! Works with both `pydantic.BaseModel` and `pydantic.dataclass`
 - `NumpyModel` (derived from `pydantic.BaseModel`) make it possible to dump and load `np.ndarray` within model fields alongside other fields that are not instances of `np.ndarray`!
+
+See the [`test.helper.groups`](https://github.com/caniko/pydantic-numpy/blob/trunk/tests/helper/groups.py) to see types that are defined explicitly. Define your own NumPy types with `pydantic_numpy.np_array_pydantic_annotated_typing`.
 
 ## Usage
 
