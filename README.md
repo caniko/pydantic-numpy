@@ -2,8 +2,8 @@
 
 Package that integrates NumPy Arrays into Pydantic!
 
-- `NumpyModel` make it possible to dump and load `np.ndarray` within model fields alongside other fields that are not instances of `np.ndarray`!
-- `pydantic_numpy.typing` provides many typings such as `NpNDArrayFp64`, `Np3DArrayFp64` (float64 that must be 3D)!
+- `pydantic_numpy.typing` provides many typings such as `NpNDArrayFp64`, `Np3DArrayFp64` (float64 that must be 3D)! Works with both `pydantic.BaseModel` and `pydantic.dataclass`
+- `NumpyModel` (derived from `pydantic.BaseModel`) make it possible to dump and load `np.ndarray` within model fields alongside other fields that are not instances of `np.ndarray`!
 
 ## Usage
 
@@ -11,13 +11,14 @@ For more examples see [test_ndarray.py](./tests/test_typing.py)
 
 ```python
 import numpy as np
+from pydantic import BaseModel
 
 import pydantic_numpy.typing as pnd
 from pydantic_numpy import np_array_pydantic_annotated_typing
 from pydantic_numpy.model import NumpyModel, MultiArrayNumpyFile
 
 
-class MyNumpyModel(NumpyModel):
+class MyBaseModelDerivedModel(BaseModel):
     any_array_dtype_and_dimension: pnd.NpNDArray
 
     # Must be numpy float32 as dtype
@@ -27,7 +28,7 @@ class MyNumpyModel(NumpyModel):
     must_be_1d_np_array: np_array_pydantic_annotated_typing(dimensions=1)
 
 
-class MyDemoModel(NumpyModel):
+class MyDemoNumpyModel(NumpyModel):
     k: np_array_pydantic_annotated_typing(data_type=np.float32)
 
 
