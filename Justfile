@@ -1,7 +1,7 @@
 
 
 test:
-    poetry run pytest .
+    poetry run pytest tests
 
 
 format:
