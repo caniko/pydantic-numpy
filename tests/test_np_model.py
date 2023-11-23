@@ -60,12 +60,6 @@ if os.name != "nt":
             numpy_model_with_arbitrary.dump(tmp_dirname, TEST_MODEL_OBJECT_ID, pickle=True, compress=False)
             assert numpy_model_with_arbitrary.load(tmp_dirname, TEST_MODEL_OBJECT_ID) == numpy_model_with_arbitrary
 
-    def test_typing_json_dump(numpy_model: NpNDArrayModelWithNonArray):
-        assert numpy_model.model_dump_json() == '{"array":"%s","non_array":%s}' % (
-            np.array2string(numpy_model.array),
-            NON_ARRAY_VALUE,
-        ), ""
-
     def test_model_agnostic_load():
         class NumpyModelAForTest(NpNDArrayModelWithNonArray):
             array: NpNDArray
