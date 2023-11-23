@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "4.0.1"
+version = "4.1.0"
 description = "Pydantic Model integration of the NumPy array"
 authors = ["Can H. Tartanoglu", "Christoph Heindl"]
 maintainers = ["Can H. Tartanoglu <python@rotas.mozmail.com>"]
@@ -30,6 +30,7 @@ semver = "^3.0.1"
 pytest = "^7.4.0"
 parameterized = "^0.9.0"
 hypothesis = "^6.82.0"
+orjson = "*"
 setuptools = "^68.0.0"
 
 [tool.poetry.group.format.dependencies]

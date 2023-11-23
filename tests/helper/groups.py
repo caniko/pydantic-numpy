@@ -82,7 +82,8 @@ data_type_3d_array_typing_dimensions = [
     # (np.datetime64, Np3DArrayDatetime64, 3),
     (np.timedelta64, Np3DArrayTimedelta64, 3),
 ]
-data_type_nd_array_typing_dimensions = [
+
+data_type_nd_array_typing_dimensions_without_complex = [
     (np.int64, NpNDArrayInt64, None),
     (np.int32, NpNDArrayInt32, None),
     (np.int16, NpNDArrayInt16, None),
@@ -95,12 +96,15 @@ data_type_nd_array_typing_dimensions = [
     (np.float64, NpNDArrayFp64, None),
     (np.float32, NpNDArrayFp32, None),
     (np.float16, NpNDArrayFp16, None),
+    (bool, NpNDArrayBool, None),
+    (np.datetime64, NpNDArrayDatetime64, None),
+    (np.timedelta64, NpNDArrayTimedelta64, None),
+]
+data_type_nd_array_typing_dimensions = [
+    *data_type_nd_array_typing_dimensions_without_complex,
     (np.clongdouble, NpNDArrayComplexLongDouble, None),
     (np.complex128, NpNDArrayComplex128, None),
     (np.complex64, NpNDArrayComplex64, None),
-    (bool, NpNDArrayBool, None),
-    # (np.datetime64, NpNDArrayDatetime64, None),
-    (np.timedelta64, NpNDArrayTimedelta64, None),
 ]
 
 data_type_array_typing_dimensions = [

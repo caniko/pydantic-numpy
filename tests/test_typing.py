@@ -5,7 +5,9 @@ from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
+import orjson
 import pytest
+from numpy.testing import assert_almost_equal
 from pydantic import ValidationError
 
 from pydantic_numpy.helper.validation import PydanticNumpyMultiArrayNumpyFileOnFilePath
@@ -14,6 +16,7 @@ from pydantic_numpy.util import np_general_all_close
 from tests.helper.cache import cached_calculation, cached_hyp_array
 from tests.helper.groups import (
     data_type_array_typing_dimensions,
+    data_type_nd_array_typing_dimensions_without_complex,
     dimension_testing_group,
     strict_data_type_nd_array_typing_dimensions,
     supported_data_types,
@@ -46,6 +49,22 @@ def test_wrong_dimension(numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions
 
 
 if os.name != "nt":
+
+    @pytest.mark.parametrize(
+        "numpy_dtype,pydantic_typing,dimensions", data_type_nd_array_typing_dimensions_without_complex
+    )
+    def test_json_serialize_deserialize(numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions: Optional[int]):
+        hyp_array = cached_hyp_array(numpy_dtype, dimensions).example()
+
+        numpy_model = cached_calculation(pydantic_typing)
+        dumped_model_json_loaded = orjson.loads(numpy_model(array_field=hyp_array).model_dump_json())
+
+        round_trip_result = numpy_model(array_field=dumped_model_json_loaded["array_field"]).array_field
+
+        if issubclass(numpy_dtype, np.timedelta64) or issubclass(numpy_dtype, np.datetime64):
+            assert hyp_array == round_trip_result
+        else:
+            assert_almost_equal(hyp_array, round_trip_result)
 
     @pytest.mark.parametrize("numpy_dtype,pydantic_typing,dimensions", data_type_array_typing_dimensions)
     def test_file_path_passing_validation(numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions: Optional[int]):

@@ -4,10 +4,10 @@ from typing import Any, Callable, ClassVar, Optional, Union
 
 import numpy as np
 from numpy.typing import DTypeLike
-from pydantic import FilePath, GetJsonSchemaHandler, PositiveInt
+from pydantic import FilePath, GetJsonSchemaHandler, PositiveInt, validate_call
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypedDict
 
 from pydantic_numpy.helper.validation import (
     create_array_validator,
@@ -15,6 +15,11 @@ from pydantic_numpy.helper.validation import (
     validate_numpy_array_file,
 )
 from pydantic_numpy.model import MultiArrayNumpyFile
+
+
+class NumpyDataDict(TypedDict):
+    data_type: str
+    data: list
 
 
 class NpArrayPydanticAnnotation:
@@ -71,7 +76,7 @@ class NpArrayPydanticAnnotation:
             python_schema=core_schema.chain_schema([_common_numpy_array_validator, np_array_schema]),
             json_schema=np_array_schema,
             serialization=core_schema.plain_serializer_function_ser_schema(
-                lambda arr: np.array2string(arr), when_used="json"
+                _serialize_numpy_array_to_data_dict, when_used="json"
             ),
         )
 
@@ -125,6 +130,18 @@ def _data_type_resolver(data_type: DTypeLike):
     return data_type is not None and issubclass(data_type, np.generic)
 
 
+def _serialize_numpy_array_to_data_dict(array: np.ndarray) -> NumpyDataDict:
+    if issubclass(array.dtype.type, np.timedelta64) or issubclass(array.dtype.type, np.datetime64):
+        return dict(data_type=str(array.dtype), data=array.astype(int).tolist())
+
+    return dict(data_type=str(array.dtype), data=array.astype(float).tolist())
+
+
+@validate_call
+def _deserialize_numpy_array_from_data_dict(data_dict: NumpyDataDict) -> np.ndarray:
+    return np.array(data_dict["data"]).astype(data_dict["data_type"])
+
+
 _int_to_dim_type = {1: tuple[int], 2: tuple[int, int], 3: tuple[int, int, int]}
 _common_numpy_array_validator = core_schema.union_schema(
     [
@@ -145,6 +162,12 @@ _common_numpy_array_validator = core_schema.union_schema(
             [
                 core_schema.is_instance_schema(Sequence),
                 core_schema.no_info_plain_validator_function(lambda v: np.asarray(v)),
+            ]
+        ),
+        core_schema.chain_schema(
+            [
+                core_schema.is_instance_schema(dict),
+                core_schema.no_info_plain_validator_function(_deserialize_numpy_array_from_data_dict),
             ]
         ),
     ]
