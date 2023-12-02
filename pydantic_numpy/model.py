@@ -99,12 +99,12 @@ class NumpyModel(BaseModel):
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
         other_path: FilePath
-        if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():
+        if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():  # pyright: ignore
             other_field_to_value = compress_pickle.load(other_path)
-        elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():
+        elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():  # pyright: ignore
             with open(other_path, "rb") as in_pickle:
                 other_field_to_value = pickle_pkg.load(in_pickle)
-        elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():
+        elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():  # pyright: ignore
             with open(other_path, "r") as in_yaml:
                 other_field_to_value = yaml.load(in_yaml)
         else:
@@ -139,15 +139,15 @@ class NumpyModel(BaseModel):
                 if compress:
                     compress_pickle.dump(
                         other_field_to_value,
-                        dump_directory_path / self._dump_compressed_pickle_file_name,
+                        dump_directory_path / self._dump_compressed_pickle_file_name,  # pyright: ignore
                         compression=self._dump_compression,
                     )
                 else:
-                    with open(dump_directory_path / self._dump_pickle_file_name, "wb") as out_pickle:
+                    with open(dump_directory_path / self._dump_pickle_file_name, "wb") as out_pickle:  # pyright: ignore
                         pickle_pkg.dump(other_field_to_value, out_pickle)
 
             else:
-                with open(dump_directory_path / self._dump_non_array_yaml_name, "w") as out_yaml:
+                with open(dump_directory_path / self._dump_non_array_yaml_name, "w") as out_yaml:  # pyright: ignore
                     yaml.dump(other_field_to_value, out_yaml)
 
         return dump_directory_path

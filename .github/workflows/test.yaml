@@ -67,6 +67,30 @@ jobs:
           --strict-optional \
           -p pydantic_numpy
 
+  pyright:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup the Python Environment ${{ matrix.python-version }}
+        uses: Qwerty-133/python-setup@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          skip-pre-commit: true
+
+      - name: Install dependencies
+        run: |
+          poetry install --all-extras --with dev,typecheck
+
+      - name: Validate type-hints with pyright
+        run: |
+          poetry run pyright pydantic_numpy
+
   format:
     runs-on: ubuntu-latest
 

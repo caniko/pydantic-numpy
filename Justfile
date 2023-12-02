@@ -18,3 +18,12 @@ mypy:
 
 mypy_test:
     poetry run mypy tests/
+
+pyright:
+    poetry run pyright pydantic_numpy
+
+pyright_test:
+    poetry run pyright tests/
+
+typegen:
+    poetry run python typegen/generate_typing.py
