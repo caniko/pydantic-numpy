@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -118,6 +118,7 @@ def _resolve_type_of_array_dtype(array_dtype: npt.DTypeLike) -> type:
     type
     """
     if hasattr(array_dtype, "type"):
-        return array_dtype.type
+        assert array_dtype is not None
+        return array_dtype.type  # pyright: ignore
     else:
-        return array_dtype
+        return cast(type, array_dtype)

@@ -116,8 +116,8 @@ def np_array_pydantic_annotated_typing(
             FilePath,
             MultiArrayNumpyFile,
             np.ndarray[  # type: ignore[misc]
-                _int_to_dim_type[dimensions] if dimensions else Any,
-                np.dtype[data_type] if _data_type_resolver(data_type) else data_type,
+                _int_to_dim_type[dimensions] if dimensions else Any,  # pyright: ignore
+                np.dtype[data_type] if _data_type_resolver(data_type) else data_type,  # type: ignore[misc]
             ],
         ],
         NpArrayPydanticAnnotation.factory(
@@ -126,15 +126,15 @@ def np_array_pydantic_annotated_typing(
     ]
 
 
-def _data_type_resolver(data_type: DTypeLike):
-    return data_type is not None and issubclass(data_type, np.generic)
+def _data_type_resolver(data_type: DTypeLike) -> bool:
+    return data_type is not None and issubclass(data_type, np.generic)  # pyright: ignore
 
 
 def _serialize_numpy_array_to_data_dict(array: np.ndarray) -> NumpyDataDict:
     if issubclass(array.dtype.type, np.timedelta64) or issubclass(array.dtype.type, np.datetime64):
-        return dict(data_type=str(array.dtype), data=array.astype(int).tolist())
+        return NumpyDataDict(data_type=str(array.dtype), data=array.astype(int).tolist())
 
-    return dict(data_type=str(array.dtype), data=array.astype(float).tolist())
+    return NumpyDataDict(data_type=str(array.dtype), data=array.astype(float).tolist())
 
 
 @validate_call
