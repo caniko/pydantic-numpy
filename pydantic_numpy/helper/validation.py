@@ -1,4 +1,4 @@
-from typing import Callable, Optional, cast
+from typing import Callable, Optional, Union, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -6,6 +6,7 @@ from numpy import floating, integer
 from numpy.lib.npyio import NpzFile
 from pydantic import FilePath
 
+from pydantic_numpy.helper.typing import NumpyDataDict
 from pydantic_numpy.model import MultiArrayNumpyFile
 
 
@@ -35,7 +36,13 @@ def create_array_validator(
     Validator for numpy array
     """
 
-    def array_validator(array: npt.NDArray) -> npt.NDArray:
+    def array_validator(array_data: Union[npt.NDArray, NumpyDataDict]) -> npt.NDArray:
+        array: npt.NDArray = (
+            np.array(array_data["data"], dtype=array_data.get("dtype", None))
+            if isinstance(array_data, dict)
+            else array_data
+        )
+
         if dimensions and (array_dimensions := len(array.shape)) != dimensions:
             msg = f"Array {array_dimensions}-dimensional; the target dimensions is {dimensions}"
             raise ValueError(msg)

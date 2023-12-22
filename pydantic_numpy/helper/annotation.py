@@ -7,19 +7,15 @@ from numpy.typing import DTypeLike
 from pydantic import FilePath, GetJsonSchemaHandler, PositiveInt, validate_call
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import Annotated
 
+from pydantic_numpy.helper.typing import NumpyDataDict
 from pydantic_numpy.helper.validation import (
     create_array_validator,
     validate_multi_array_numpy_file,
     validate_numpy_array_file,
 )
 from pydantic_numpy.model import MultiArrayNumpyFile
-
-
-class NumpyDataDict(TypedDict):
-    data_type: str
-    data: list
 
 
 class NpArrayPydanticAnnotation:

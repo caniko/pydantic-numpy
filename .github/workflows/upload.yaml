@@ -1,0 +1,40 @@
+name: Upload
+
+on:
+  workflow_run:
+    workflows: [ "Tests" ]
+    types:
+      - completed
+  push:
+    branches: [ trunk ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    strategy:
+      matrix:
+        python-version: [ "3.12" ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup the Python Environment ${{ matrix.python-version }}
+        uses: Qwerty-133/python-setup@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          skip-pre-commit: true
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build package
+        run: poetry build
+
+      - name: Upload to PyPi
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
