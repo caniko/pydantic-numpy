@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Union, cast
+from typing import Callable, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -6,7 +6,7 @@ from numpy import floating, integer
 from numpy.lib.npyio import NpzFile
 from pydantic import FilePath
 
-from pydantic_numpy.helper.typing import NumpyDataDict
+from pydantic_numpy.helper.typing import NumpyDataDict, SupportedDTypes
 from pydantic_numpy.model import MultiArrayNumpyFile
 
 
@@ -15,7 +15,7 @@ class PydanticNumpyMultiArrayNumpyFileOnFilePath(Exception):
 
 
 def create_array_validator(
-    dimensions: Optional[int], target_data_type: npt.DTypeLike, strict_data_typing: bool
+    dimensions: Optional[int], target_data_type: SupportedDTypes, strict_data_typing: bool
 ) -> Callable[[npt.NDArray], npt.NDArray]:
     """
     Creates a validator that ensures the numpy array has the defined dimensions and dtype (data_type).
@@ -52,9 +52,7 @@ def create_array_validator(
                 msg = f"The data_type {array.dtype.type} does not coincide with type hint; {target_data_type}"
                 raise ValueError(msg)
 
-            if issubclass(_resolve_type_of_array_dtype(target_data_type), integer) and issubclass(
-                _resolve_type_of_array_dtype(array.dtype), floating
-            ):
+            if issubclass(target_data_type, integer) and issubclass(array.dtype.type, floating):
                 array = np.round(array).astype(target_data_type, copy=False)
             else:
                 array = array.astype(target_data_type, copy=True)
@@ -109,23 +107,3 @@ def validate_multi_array_numpy_file(v: MultiArrayNumpyFile) -> npt.NDArray:
     NDArray from MultiArrayNumpyFile
     """
     return v.load()
-
-
-def _resolve_type_of_array_dtype(array_dtype: npt.DTypeLike) -> type:
-    """
-    np.dtype have the type stored in the type attribute, function to extract that type.
-    If the DTypelike isn't np.dtype we just return what is already a type.
-
-    Parameters
-    ----------
-    array_dtype: DTypeLike
-
-    Returns
-    -------
-    type
-    """
-    if hasattr(array_dtype, "type"):
-        assert array_dtype is not None
-        return array_dtype.type  # pyright: ignore
-    else:
-        return cast(type, array_dtype)
