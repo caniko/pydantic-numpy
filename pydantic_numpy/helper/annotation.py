@@ -3,13 +3,12 @@ from pathlib import Path
 from typing import Any, Callable, ClassVar, Optional, Union
 
 import numpy as np
-from numpy.typing import DTypeLike
 from pydantic import FilePath, GetJsonSchemaHandler, PositiveInt, validate_call
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
 from typing_extensions import Annotated
 
-from pydantic_numpy.helper.typing import NumpyDataDict
+from pydantic_numpy.helper.typing import NumpyDataDict, SupportedDTypes
 from pydantic_numpy.helper.validation import (
     create_array_validator,
     validate_multi_array_numpy_file,
@@ -21,12 +20,16 @@ from pydantic_numpy.model import MultiArrayNumpyFile
 class NpArrayPydanticAnnotation:
     dimensions: ClassVar[Optional[PositiveInt]]
 
-    data_type: ClassVar[DTypeLike]
+    data_type: ClassVar[SupportedDTypes]
     strict_data_typing: ClassVar[bool]
 
     @classmethod
     def factory(
-        cls, *, data_type: DTypeLike, dimensions: Optional[int] = None, strict_data_typing: bool = False
+        cls,
+        *,
+        data_type: Optional[SupportedDTypes] = None,
+        dimensions: Optional[int] = None,
+        strict_data_typing: bool = False,
     ) -> type:
         """
         Create an instance NpArrayPydanticAnnotation that is configured for a specific dimension and dtype.
@@ -36,7 +39,7 @@ class NpArrayPydanticAnnotation:
 
         Parameters
         ----------
-        data_type: DTypeLike
+        data_type: SupportedDTypes
         dimensions: Optional[int]
             Number of dimensions determine the depth of the numpy array.
         strict_data_typing: bool
@@ -47,7 +50,7 @@ class NpArrayPydanticAnnotation:
         NpArrayPydanticAnnotation
         """
         if strict_data_typing and not data_type:
-            msg = "Strict data typing requires data_type (DTypeLike) definition"
+            msg = "Strict data typing requires data_type (SupportedDTypes) definition"
             raise ValueError(msg)
 
         return type(
@@ -90,14 +93,14 @@ class NpArrayPydanticAnnotation:
 
 
 def np_array_pydantic_annotated_typing(
-    data_type: DTypeLike = None, dimensions: Optional[int] = None, strict_data_typing: bool = False
+    data_type: Optional[SupportedDTypes] = None, dimensions: Optional[int] = None, strict_data_typing: bool = False
 ):
     """
     Generates typing and pydantic annotation of a np.ndarray parametrized with given constraints
 
     Parameters
     ----------
-    data_type: DTypeLike
+    data_type: SupportedDTypes
     dimensions: Optional[int]
         Number of dimensions determine the depth of the numpy array.
     strict_data_typing: bool
@@ -113,7 +116,7 @@ def np_array_pydantic_annotated_typing(
             MultiArrayNumpyFile,
             np.ndarray[  # type: ignore[misc]
                 _int_to_dim_type[dimensions] if dimensions else Any,  # pyright: ignore
-                np.dtype[data_type] if _data_type_resolver(data_type) else data_type,  # type: ignore[misc]
+                np.dtype[data_type] if _data_type_resolver(data_type) else data_type,  # type: ignore[valid-type]
             ],
         ],
         NpArrayPydanticAnnotation.factory(
@@ -122,8 +125,8 @@ def np_array_pydantic_annotated_typing(
     ]
 
 
-def _data_type_resolver(data_type: DTypeLike) -> bool:
-    return data_type is not None and issubclass(data_type, np.generic)  # pyright: ignore
+def _data_type_resolver(data_type: Optional[SupportedDTypes]) -> bool:
+    return data_type is not None and issubclass(data_type, np.generic)
 
 
 def _serialize_numpy_array_to_data_dict(array: np.ndarray) -> NumpyDataDict:

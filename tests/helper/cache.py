@@ -2,10 +2,11 @@ from functools import cache
 from typing import Optional
 
 import numpy as np
-import numpy.typing as npt
 from hypothesis.extra.numpy import arrays
 from hypothesis.strategies import floats
 from pydantic import BaseModel
+
+from pydantic_numpy.helper.typing import SupportedDTypes
 
 
 @cache
@@ -17,7 +18,7 @@ def cached_calculation(array_type_hint) -> type[BaseModel]:
 
 
 @cache
-def cached_hyp_array(numpy_dtype: npt.DTypeLike, dimensions: Optional[int] = None, *, _axis_length: int = 1):
+def cached_hyp_array(numpy_dtype: SupportedDTypes, dimensions: Optional[int] = None, *, _axis_length: int = 1):
     if np.issubdtype(numpy_dtype, np.floating):
         if numpy_dtype == np.float16:
             width = 16
