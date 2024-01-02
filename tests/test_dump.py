@@ -21,13 +21,9 @@ class TestDump:
         b = B(a=a)
         c = C(b=b)
         
-        path = Path.home() / "test"
-        path.mkdir(exist_ok=True)
-        c.dump(path, "multilevel_model_test")
-        # with tempfile.TemporaryDirectory() as tmp:
-        #     print(tmp)
-        #     path = Path(tmp)
-        #     c.dump(path, "multilevel_model_test")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            c.dump(path, "multilevel_model_test")
             
-        new_c = C.load(path, "multilevel_model_test")
-        assert new_c == c
+            new_c = C.load(path, "multilevel_model_test")
+            assert new_c == c
