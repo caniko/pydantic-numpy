@@ -49,9 +49,8 @@ class NumpyModel(BaseModel):
             self_type = self.__pydantic_generic_metadata__["origin"] or self.__class__
             other_type = other.__pydantic_generic_metadata__["origin"] or other.__class__
 
-            self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict()
-            other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict()
-
+            self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict(self)
+            other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict(self)
             return (
                 self_type == other_type
                 and self_other_field_to_value == other_other_field_to_value
@@ -113,7 +112,19 @@ class NumpyModel(BaseModel):
         field_to_value = {**npz_file, **other_field_to_value}
         if pre_load_modifier:
             field_to_value = pre_load_modifier(field_to_value)
-
+        
+        def extract_dirs_to_dict(dir_dict: dict[str, Any]) -> dict[str, Any]:
+            """ Extract from a flat dict of {a/b/c : value} to {a: {b: {c: value}}}"""
+            new_dict = dict[str, Any]()
+            for k, v in dir_dict.items():
+                first_slash = k.find('/')
+                if first_slash == -1:
+                    new_dict[k] = v
+                else:
+                    new_dict[k[:first_slash]] = extract_dirs_to_dict({k[first_slash + 1:] : v})
+            return new_dict
+        
+        field_to_value = extract_dirs_to_dict(field_to_value)
         return cls(**field_to_value)
 
     @validate_call
@@ -127,8 +138,8 @@ class NumpyModel(BaseModel):
         dump_directory_path = self.model_directory_path(output_directory, object_id)
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
-        ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict()
-
+        ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict(self)
+    
         if ndarray_field_to_array:
             (np.savez_compressed if compress else np.savez)(
                 dump_directory_path / self._dump_numpy_savez_file_name, **ndarray_field_to_array
@@ -152,12 +163,20 @@ class NumpyModel(BaseModel):
 
         return dump_directory_path
 
-    def _dump_numpy_split_dict(self) -> tuple[dict, dict]:
-        ndarray_field_to_array = {}
-        other_field_to_value = {}
+    @staticmethod
+    def _dump_numpy_split_dict(model: "NumpyModel") -> tuple[dict[str, np.ndarray], dict[str, Any]]:
+        ndarray_field_to_array = dict[str, np.ndarray]()
+        other_field_to_value = dict[str, Any]()
 
-        for k, v in self.model_dump(exclude_unset=True).items():
-            if isinstance(v, np.ndarray):
+        for k, v in model.model_dump(exclude_unset=True).items():
+            item = getattr(model, k)
+            if isinstance(item, NumpyModel):
+                submodel_ndarray_field_to_array, submodel_other_field_to_value = item._dump_numpy_split_dict(item)
+                for sub_k_np, sub_v_np in submodel_ndarray_field_to_array.items():
+                    ndarray_field_to_array[f"{k}/{sub_k_np}"] = sub_v_np
+                for sub_k_other, sub_v_other in submodel_other_field_to_value.items():
+                    other_field_to_value[f"{k}/{sub_k_other}"] = sub_v_other
+            elif isinstance(v, np.ndarray):
                 ndarray_field_to_array[k] = v
             else:
                 other_field_to_value[k] = v
