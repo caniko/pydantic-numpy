@@ -36,7 +36,7 @@ def serialize_numpy_array_to_data_dict(array_like: npt.ArrayLike) -> NumpyDataDi
 
     Parameters
     ----------
-    array: np.ndarray
+    array_like: np.ndarray
                   The NumPy array to be serialized. This can be a standard numerical array or an array
                   of datetime/timedelta objects.
 
@@ -49,8 +49,8 @@ def serialize_numpy_array_to_data_dict(array_like: npt.ArrayLike) -> NumpyDataDi
 
     Example
     -------
-    >>> array = np.array([1, 2, 3])
-    >>> serialize_numpy_array_to_data_dict(array)
+    >>> my_array = np.array([1, 2, 3])
+    >>> serialize_numpy_array_to_data_dict(my_array)
     {'data_type': 'int64', 'data': [1.0, 2.0, 3.0]}
     """
     array = np.array(array_like)
@@ -128,7 +128,7 @@ class NpArrayPydanticAnnotation:
             python_schema=core_schema.chain_schema([_common_numpy_array_validator, np_array_schema]),
             json_schema=np_array_schema,
             serialization=core_schema.plain_serializer_function_ser_schema(
-                cls.serialize_numpy_array_to_json, when_used="json"
+                cls.serialize_numpy_array_to_json, when_used="json-unless-none"
             ),
         )
 
