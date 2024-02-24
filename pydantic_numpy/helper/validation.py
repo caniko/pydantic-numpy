@@ -85,7 +85,7 @@ def validate_numpy_array_file(v: FilePath) -> npt.NDArray:
                 f"convert to single array NpzFiles.\n"
                 f"Path to multi array file: {result}\n"
                 f"Array keys: {', '.join(result.files)}\n"
-                f"Use pydantic_numpy.{MultiArrayNumpyFile.__class__.__name__} instead of a PathLike alone"
+                f"Use pydantic_numpy.{MultiArrayNumpyFile.__name__} instead of a PathLike alone"
             )
             raise PydanticNumpyMultiArrayNumpyFileOnFilePath(msg)
         result = result[files[0]]
