@@ -73,7 +73,7 @@ pip install pydantic-numpy
 ```
 
 ## Considerations
-You can install from [cheind's](https://github.com/cheind/pydantic-numpy) repository if you want Python `3.8` support, but this version only supports Pydantic V1 and will not work with V2.
+The latest version of `pydantic-numpy` supports Python 3.9 up to 3.12, and Pydantic 2+.
 
 ### Licensing notice
 As of version `3.0.0` the license has moved over to BSD-4. The versions prior are under the MIT license.
