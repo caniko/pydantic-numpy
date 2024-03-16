@@ -67,6 +67,29 @@ cfg.dump("path_to_dump_dir", "object_id")
 equals_cfg = model_agnostic_load("path_to_dump_dir", "object_id", models=[MyNumpyModel, MyDemoModel])
 ```
 
+### Custom serialization
+
+If you're not happy with default `NumpyDataDict` serialization, as defined in [typing.py](./pydantic_numpy/helper/typing.py), you could define your own type with custom serializer using `NpArrayPydanticAnnotation.factory`
+and its `serialize_numpy_array_to_json` argument taking `Callable[[npt.ArrayLike], Iterable]`.
+
+Example below illustrates definition of 1d-array of `float32` type that serializes to flat Python list (without nested dict as in default `NumpyDataDict` case):
+
+```python
+def _serialize_numpy_array_to_float_list(array_like: npt.ArrayLike) -> Iterable:
+    return np.array(array_like).astype(float).tolist()
+
+
+Np1DArrayFp32 = Annotated[
+    np.ndarray[tuple[int], np.dtype[np.float32]],
+    NpArrayPydanticAnnotation.factory(
+        data_type=np.float32,
+        dimensions=1,
+        strict_data_typing=False,
+        serialize_numpy_array_to_json=_serialize_numpy_array_to_float_list,
+    ),
+]
+```
+
 ### Install
 ```shell
 pip install pydantic-numpy
