@@ -7,6 +7,8 @@
 ![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
 
+## Usage
+
 Package that integrates NumPy Arrays into Pydantic!
 
 - `pydantic_numpy.typing` provides many typings such as `NpNDArrayFp64`, `Np3DArrayFp64` (float64 that must be 3D)! Works with both `pydantic.BaseModel` and `pydantic.dataclass`
@@ -14,7 +16,7 @@ Package that integrates NumPy Arrays into Pydantic!
 
 See the [`test.helper.groups`](https://github.com/caniko/pydantic-numpy/blob/trunk/tests/helper/groups.py) to see types that are defined explicitly. Define your own NumPy types with `pydantic_numpy.np_array_pydantic_annotated_typing`.
 
-## Usage
+### Examples
 
 For more examples see [test_ndarray.py](./tests/test_typing.py)
 
@@ -73,7 +75,7 @@ pip install pydantic-numpy
 ```
 
 ## Considerations
-You can install from [cheind's](https://github.com/cheind/pydantic-numpy) repository if you want Python `3.8` support, but this version only supports Pydantic V1 and will not work with V2.
+The package is designed to work with Pydantic V2 and not V1. You can install from [cheind's](https://github.com/cheind/pydantic-numpy) repository if you want Python `<=3.8` and Pydantic V1 support.
 
 ### Licensing notice
 As of version `3.0.0` the license has moved over to BSD-4. The versions prior are under the MIT license.
