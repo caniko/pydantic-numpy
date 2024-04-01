@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "4.2.0"
+version = "5.0.0"
 description = "Pydantic Model integration of the NumPy array"
 authors = ["Can H. Tartanoglu", "Christoph Heindl"]
 maintainers = ["Can H. Tartanoglu <python@rotas.mozmail.com>"]
@@ -50,7 +50,7 @@ filterwarnings = [
 
 [tool.black]
 line-length = 120
-target-version = ["py311"]
+target-version = ["py312"]
 
 [tool.isort]
 profile = "black"
