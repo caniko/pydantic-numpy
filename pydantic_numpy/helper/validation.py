@@ -6,7 +6,7 @@ from numpy import floating, integer
 from numpy.lib.npyio import NpzFile
 from pydantic import FilePath
 
-from pydantic_numpy.helper.typing import NumpyDataDict, SupportedDTypes
+from pydantic_numpy.helper.typing import NumpyArrayTypeData, SupportedDTypes
 from pydantic_numpy.model import MultiArrayNumpyFile
 
 
@@ -36,7 +36,7 @@ def create_array_validator(
     Validator for numpy array
     """
 
-    def array_validator(array_data: Union[npt.NDArray, NumpyDataDict]) -> npt.NDArray:
+    def array_validator(array_data: Union[npt.NDArray, NumpyArrayTypeData]) -> npt.NDArray:
         array: npt.NDArray = (
             np.array(array_data["data"], dtype=array_data.get("dtype", None))
             if isinstance(array_data, dict)

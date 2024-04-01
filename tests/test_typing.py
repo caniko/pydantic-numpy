@@ -65,7 +65,7 @@ if os.name != "nt":
         round_trip_result = numpy_model(array_field=dumped_model_json_loaded["array_field"]).array_field
 
         if issubclass(numpy_dtype, np.timedelta64) or issubclass(numpy_dtype, np.datetime64):
-            assert hyp_array == round_trip_result
+            assert np.all(hyp_array == round_trip_result)
         else:
             assert_almost_equal(hyp_array, round_trip_result)
 
