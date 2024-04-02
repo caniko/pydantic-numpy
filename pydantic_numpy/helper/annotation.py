@@ -283,18 +283,18 @@ def _deserialize_numpy_array_from_data_dict(data_dict: NumpyArrayTypeData) -> np
 
 # IN_THE_FUTURE: Only works with 3.11 and above
 # @validate_call
-# def _dimension_type_from_depth(depth: PositiveInt) -> type[tuple[Any, ...]]:
-#     return tuple[*[Any] * depth]  # type: ignore
+# def _dimension_type_from_depth(depth: PositiveInt) -> type[tuple[int, ...]]:
+#     return tuple[*[int] * depth]  # type: ignore
 
 
-_dimensions_to_shape_type: Final[dict[PositiveInt, type[tuple[Any, ...]]]] = {
-    1: tuple[Any],
-    2: tuple[Any, Any],
-    3: tuple[Any, Any, Any],
-    4: tuple[Any, Any, Any, Any],
-    5: tuple[Any, Any, Any, Any, Any],
-    6: tuple[Any, Any, Any, Any, Any, Any],
-    7: tuple[Any, Any, Any, Any, Any, Any, Any],
+_dimensions_to_shape_type: Final[dict[PositiveInt, type[tuple[int, ...]]]] = {
+    1: tuple[int],  # type: ignore[dict-item]
+    2: tuple[int, int],  # type: ignore[dict-item]
+    3: tuple[int, int, int],  # type: ignore[dict-item]
+    4: tuple[int, int, int, int],  # type: ignore[dict-item]
+    5: tuple[int, int, int, int, int],  # type: ignore[dict-item]
+    6: tuple[int, int, int, int, int, int],  # type: ignore[dict-item]
+    7: tuple[int, int, int, int, int, int, int],  # type: ignore[dict-item]
 }
 
 

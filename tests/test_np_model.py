@@ -7,7 +7,6 @@ import pytest
 
 from pydantic_numpy.model import model_agnostic_load
 from pydantic_numpy.typing import NpNDArray
-from tests.helper.cache import cached_hyp_array
 from tests.model import (
     NpNDArrayModelWithNonArray,
     NpNDArrayModelWithNonArrayWithArbitrary,
@@ -18,12 +17,8 @@ OTHER_TEST_MODEL_OBJECT_ID = "other_test"
 NON_ARRAY_VALUE = 5
 
 
-def _create_example_array():
-    return cached_hyp_array(np.float64, 1).example()
-
-
 def _numpy_model():
-    return NpNDArrayModelWithNonArray(array=_create_example_array(), non_array=NON_ARRAY_VALUE)
+    return NpNDArrayModelWithNonArray(array=np.array([0.0]), non_array=NON_ARRAY_VALUE)
 
 
 @pytest.fixture
@@ -35,7 +30,7 @@ def numpy_model():
     params=[
         _numpy_model(),
         NpNDArrayModelWithNonArrayWithArbitrary(
-            array=_create_example_array(), non_array=NON_ARRAY_VALUE, my_arbitrary_slice=slice(0, 10)
+            array=np.array([0.0]), non_array=NON_ARRAY_VALUE, my_arbitrary_slice=slice(0, 10)
         ),
     ]
 )
@@ -73,8 +68,8 @@ if os.name != "nt":
             array: NpNDArray
             non_array: int
 
-        model_a = NumpyModelAForTest(array=_create_example_array(), non_array=NON_ARRAY_VALUE)
-        model_b = NumpyModelBForTest(array=_create_example_array(), non_array=NON_ARRAY_VALUE)
+        model_a = NumpyModelAForTest(array=np.array([0.0]), non_array=NON_ARRAY_VALUE)
+        model_b = NumpyModelBForTest(array=np.array([0.0]), non_array=NON_ARRAY_VALUE)
 
         with tempfile.TemporaryDirectory() as tmp_dirname:
             tmp_dir_path = Path(tmp_dirname)
@@ -82,6 +77,6 @@ if os.name != "nt":
             model_a.dump(tmp_dir_path, TEST_MODEL_OBJECT_ID)
             model_b.dump(tmp_dir_path, OTHER_TEST_MODEL_OBJECT_ID)
 
-            models = [model_a, model_b]
+            models = [NumpyModelAForTest, NumpyModelBForTest]
             assert model_a == model_agnostic_load(tmp_dir_path, TEST_MODEL_OBJECT_ID, models=models)
             assert model_b == model_agnostic_load(tmp_dir_path, OTHER_TEST_MODEL_OBJECT_ID, models=models)
