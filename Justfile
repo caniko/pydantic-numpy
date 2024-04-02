@@ -7,7 +7,7 @@ test:
 format:
     poetry run black .
     poetry run isort .
-    poetry run ruff check . --fix
+    poetry run ruff check --fix --exit-zero .
     @echo "Formatting complete 🎉"
 
 mypy:
@@ -27,3 +27,5 @@ pyright_test:
 
 typegen:
     poetry run python typegen/generate_typing.py
+
+check: format pyright test

@@ -29,14 +29,12 @@ semver = "^3.0.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 parameterized = "^0.9.0"
-hypothesis = "^6.82.0"
 orjson = "*"
-setuptools = "^68.0.0"
 
 [tool.poetry.group.format.dependencies]
 black = "^23.7.0"
 isort = "^5.12.0"
-ruff = "^0.0.285"
+ruff = "*"
 
 [tool.poetry.group.typecheck.dependencies]
 mypy = "*"
@@ -44,7 +42,6 @@ pyright = "^1.1.338"
 
 [tool.pytest.ini_options]
 filterwarnings = [
-    "ignore::hypothesis.errors.NonInteractiveExampleWarning",
     "ignore:invalid value encountered in multiply:RuntimeWarning",
 ]
 
@@ -57,10 +54,11 @@ profile = "black"
 
 [tool.ruff]
 line-length = 120
-ignore-init-module-imports = true
-ignore = ["F403", "F405"]
+lint.ignore-init-module-imports = true
+lint.ignore = ["F403", "F405"]
 
 [tool.pyright]
+include = ["pydantic_numpy/**", "tests/**"]
 reportUnsupportedDunderAll = false
 
 [build-system]
