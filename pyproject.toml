@@ -32,7 +32,7 @@ parameterized = "^0.9.0"
 orjson = "*"
 
 [tool.poetry.group.format.dependencies]
-black = "^23.7.0"
+black = ">=23.7,<25.0"
 isort = "^5.12.0"
 ruff = "*"
 
