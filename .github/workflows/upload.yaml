@@ -22,13 +22,16 @@ jobs:
         python-version: [ "3.12" ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Setup the Python Environment ${{ matrix.python-version }}
-        uses: Qwerty-133/python-setup@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          skip-pre-commit: true
+          cache: "poetry"
 
       - name: Install dependencies
         run: poetry install

@@ -13,6 +13,7 @@ defaults:
 jobs:
   unit_tests:
     strategy:
+      fail-fast: false
       matrix:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
@@ -20,13 +21,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Setup the Python Environment ${{ matrix.python-version }}
-        uses: Qwerty-133/python-setup@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          skip-pre-commit: true
+          cache: "poetry"
 
       - name: Install dependencies
         run: |
@@ -37,7 +41,7 @@ jobs:
           poetry run pytest .
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   mypy:
@@ -48,13 +52,16 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Setup the Python Environment ${{ matrix.python-version }}
-        uses: Qwerty-133/python-setup@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          skip-pre-commit: true
+          cache: "poetry"
 
       - name: Install dependencies
         run: |
@@ -75,13 +82,16 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Setup the Python Environment ${{ matrix.python-version }}
-        uses: Qwerty-133/python-setup@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          skip-pre-commit: true
+          cache: "poetry"
 
       - name: Install dependencies
         run: |
@@ -99,13 +109,16 @@ jobs:
         python-version: [ "3.12" ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Setup the Python Environment ${{ matrix.python-version }}
-        uses: Qwerty-133/python-setup@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          skip-pre-commit: true
+          cache: "poetry"
 
       - name: Install dependencies
         run: |
