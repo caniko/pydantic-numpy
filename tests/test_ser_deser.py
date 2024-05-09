@@ -6,7 +6,7 @@ from pydantic_numpy.typing import NpNDArrayFp64, NpNDArrayInt64
 from pydantic_numpy.model import NumpyModel
 
 class TestSerDeser(unittest.TestCase):
-    def test_can_ser_and_deser_basic_numpy_to_json(self):
+    def test_can_ser_and_deser_basic_numpy_to_json_and_compare(self):
 
         # Given
         class NumpyData(NumpyModel):
