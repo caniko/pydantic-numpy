@@ -49,8 +49,9 @@ class NumpyModel(BaseModel):
             self_type = self.__pydantic_generic_metadata__["origin"] or self.__class__
             other_type = other.__pydantic_generic_metadata__["origin"] or other.__class__
 
-            self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict()
-            other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict()
+            # Pass through exclude_unset=False since it's important we compare all fields in equality
+            self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict(exclude_unset=False)
+            other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict(exclude_unset=False)
 
             return (
                 self_type == other_type
@@ -152,11 +153,11 @@ class NumpyModel(BaseModel):
 
         return dump_directory_path
 
-    def _dump_numpy_split_dict(self) -> tuple[dict, dict]:
+    def _dump_numpy_split_dict(self, exclude_unset=True) -> tuple[dict, dict]:
         ndarray_field_to_array = {}
         other_field_to_value = {}
 
-        for k, v in self.model_dump(exclude_unset=True).items():
+        for k, v in self.model_dump(exclude_unset=exclude_unset).items():
             if isinstance(v, np.ndarray):
                 ndarray_field_to_array[k] = v
             else:
