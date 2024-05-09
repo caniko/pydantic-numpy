@@ -1,4 +1,4 @@
-import os
+import platform
 
 import numpy as np
 
@@ -185,7 +185,7 @@ dimension_testing_group = [
     (np.array([[[0]]]), np.int64, Np3DArrayInt64, 3),
 ]
 
-if os.name != "nt":
+if platform.system() != "Windows":
 
     def get_strict_data_type_nd_array_typing_dimensions_128_bit():
         return [

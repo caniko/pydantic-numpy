@@ -1,4 +1,4 @@
-import os
+import platform
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -54,7 +54,7 @@ def test_wrong_dimension():
         get_numpy_type_model(Np1DArrayInt64)(array_field=np.array([[0]]))
 
 
-if os.name != "nt":
+if platform.system() == "Linux":
     from tests.helper.testing_groups import (
         get_strict_data_type_nd_array_typing_dimensions_128_bit,
     )
