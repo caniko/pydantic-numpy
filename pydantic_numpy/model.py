@@ -45,24 +45,29 @@ class NumpyModel(BaseModel):
     _directory_suffix: ClassVar[str] = ".pdnp"
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, NumpyModel):
-            self_type = self.__pydantic_generic_metadata__["origin"] or self.__class__
-            other_type = other.__pydantic_generic_metadata__["origin"] or other.__class__
+        if not isinstance(other, BaseModel):
+            return NotImplemented  # delegate to the other item in the comparison
 
+        self_type = self.__pydantic_generic_metadata__["origin"] or self.__class__
+        other_type = other.__pydantic_generic_metadata__["origin"] or other.__class__
+
+        if not (
+            self_type == other_type
+            and getattr(self, "__pydantic_private__", None) == getattr(other, "__pydantic_private__", None)
+            and self.__pydantic_extra__ == other.__pydantic_extra__
+        ):
+            return False
+
+        if isinstance(other, NumpyModel):
             self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict()
             other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict()
 
-            return (
-                self_type == other_type
-                and self_other_field_to_value == other_other_field_to_value
-                and self.__pydantic_private__ == other.__pydantic_private__
-                and self.__pydantic_extra__ == other.__pydantic_extra__
-                and _compare_np_array_dicts(self_ndarray_field_to_array, other_ndarray_field_to_array)
+            return self_other_field_to_value == other_other_field_to_value and _compare_np_array_dicts(
+                self_ndarray_field_to_array, other_ndarray_field_to_array
             )
-        elif isinstance(other, BaseModel):
-            return super().__eq__(other)
-        else:
-            return NotImplemented  # delegate to the other item in the comparison
+
+        # Self is NumpyModel, other is not; likely unequal; checking anyway.
+        return super().__eq__(other)
 
     @classmethod
     @validate_call
@@ -156,10 +161,10 @@ class NumpyModel(BaseModel):
         ndarray_field_to_array = {}
         other_field_to_value = {}
 
-        for k, v in self.model_dump(exclude_unset=True).items():
+        for k, v in self.model_dump().items():
             if isinstance(v, np.ndarray):
                 ndarray_field_to_array[k] = v
-            else:
+            elif v:
                 other_field_to_value[k] = v
 
         return ndarray_field_to_array, other_field_to_value
@@ -259,16 +264,13 @@ def _compare_np_array_dicts(
     keys2 = frozenset(dict_b.keys())
 
     if keys1 != keys2:
-        raise ValueError("Dictionaries have different keys")
+        return False
 
     for key in keys1:
         arr_a = dict_a[key]
         arr_b = dict_b[key]
 
-        if arr_a.shape != arr_b.shape:
-            raise ValueError(f"Arrays for key '{key}' have different shapes")
-
-        if not np_general_all_close(arr_a, arr_b, rtol, atol):
+        if arr_a.shape != arr_b.shape or not np_general_all_close(arr_a, arr_b, rtol, atol):
             return False
 
     return True
