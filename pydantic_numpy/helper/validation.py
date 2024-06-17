@@ -37,11 +37,11 @@ def create_array_validator(
     """
 
     def array_validator(array_data: Union[npt.NDArray, NumpyArrayTypeData]) -> npt.NDArray:
-        array: npt.NDArray = (
-            np.array(array_data["data"], dtype=array_data.get("dtype", None))
-            if isinstance(array_data, dict)
-            else array_data
-        )
+        array: npt.NDArray
+        if isinstance(array_data, dict):
+            array = np.array(array_data["data"], dtype=array_data["data_type"])
+        else:
+            array = array_data
 
         if dimensions and (array_dimensions := len(array.shape)) != dimensions:
             msg = f"Array {array_dimensions}-dimensional; the target dimensions is {dimensions}"

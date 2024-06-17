@@ -11,10 +11,7 @@ format:
     @echo "Formatting complete 🎉"
 
 mypy:
-    poetry run mypy --ignore-missing-imports \
-    --follow-imports=skip \
-    --strict-optional \
-    -p pydantic_numpy
+    poetry run mypy
 
 mypy_test:
     poetry run mypy tests/
@@ -28,4 +25,4 @@ pyright_test:
 typegen:
     poetry run python typegen/generate_typing.py
 
-check: format pyright test
+check: format pyright mypy test

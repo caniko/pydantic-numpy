@@ -104,12 +104,12 @@ class NumpyModel(BaseModel):
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
         other_path: FilePath
-        if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():  # pyright: ignore
+        if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():  # type: ignore[operator]
             other_field_to_value = compress_pickle.load(other_path)
-        elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():  # pyright: ignore
+        elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():  # type: ignore[operator]
             with open(other_path, "rb") as in_pickle:
                 other_field_to_value = pickle_pkg.load(in_pickle)
-        elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():  # pyright: ignore
+        elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():  # type: ignore[operator]
             with open(other_path, "r") as in_yaml:
                 other_field_to_value = yaml.load(in_yaml)
         else:
