@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.typing as npt
-from numpy.core._exceptions import UFuncTypeError
+from numpy._core._exceptions import UFuncTypeError
 from semver import Version
 
 

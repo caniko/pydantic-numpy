@@ -68,11 +68,7 @@ jobs:
           poetry install --all-extras --with dev,typecheck
 
       - name: Validate type-hints with MyPy
-        run: |
-          poetry run mypy --ignore-missing-imports \
-          --follow-imports=skip \
-          --strict-optional \
-          -p pydantic_numpy
+        run: poetry run mypy
 
   pyright:
     runs-on: ubuntu-latest

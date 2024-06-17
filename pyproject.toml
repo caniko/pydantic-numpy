@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "5.0.2"
+version = "6.0.0"
 description = "Pydantic Model integration of the NumPy array"
 authors = ["Can H. Tartanoglu", "Christoph Heindl"]
 maintainers = ["Can H. Tartanoglu <python@rotas.mozmail.com>"]
@@ -22,7 +22,7 @@ python = ">=3.9, <3.13"
 compress-pickle = { version = "*", extras = ["lz4"] }
 ruamel-yaml = "^0.18.5"
 
-numpy = ">=1.23.0"
+numpy = ">=2.0.0"
 pydantic = "^2.0"
 semver = "^3.0.1"
 
@@ -61,6 +61,10 @@ lint.ignore = ["F403", "F405"]
 [tool.pyright]
 include = ["pydantic_numpy/**", "tests/**"]
 reportUnsupportedDunderAll = false
+
+[tool.mypy]
+ignore_missing_imports = true
+packages = ["pydantic_numpy"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
