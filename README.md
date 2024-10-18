@@ -1,6 +1,6 @@
 # pydantic-numpy
 
-![Python 3.9-3.12](https://img.shields.io/badge/python-3.9--3.12-blue.svg)
+![Python 3.10-3.12](https://img.shields.io/badge/python-3.9--3.12-blue.svg)
 [![Packaged with Poetry](https://img.shields.io/badge/packaging-poetry-cyan.svg)](https://python-poetry.org/)
 ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)
