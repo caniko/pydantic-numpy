@@ -103,7 +103,9 @@ def pd_np_native_numpy_array_json_schema_from_type_data(
     if data_type and _data_type_resolver(data_type):
         array_data_type = data_type.__name__
         item_schema = core_schema.list_schema(
-            items_schema=core_schema.any_schema(metadata=f"Must be compatible with numpy.dtype: {array_data_type}"),
+            items_schema=core_schema.any_schema(
+                metadata=dict(typing=f"Must be compatible with numpy.dtype: {array_data_type}")
+            )
         )
     else:
         array_data_type = "Any"
