@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydantic_numpy"
-version = "6.0.1"
+version = "7.0.0"
 description = "Pydantic Model integration of the NumPy array"
 authors = ["Can H. Tartanoglu", "Christoph Heindl"]
 maintainers = ["Can H. Tartanoglu <python@rotas.mozmail.com>"]
@@ -18,7 +18,7 @@ classifiers = [
 packages = [{include = "pydantic_numpy"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.14"
 compress-pickle = { version = "*", extras = ["lz4"] }
 ruamel-yaml = "^0.18.5"
 
@@ -55,7 +55,6 @@ profile = "black"
 
 [tool.ruff]
 line-length = 120
-lint.ignore-init-module-imports = true
 lint.ignore = ["F403", "F405"]
 
 [tool.pyright]
