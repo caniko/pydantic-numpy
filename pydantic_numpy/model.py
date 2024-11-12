@@ -7,7 +7,7 @@ from typing import Any, Callable, ClassVar, Iterable, Optional
 import compress_pickle
 import numpy as np
 import numpy.typing as npt
-from pydantic import BaseModel, DirectoryPath, FilePath, computed_field, validate_call
+from pydantic import BaseModel, DirectoryPath, FilePath, validate_call
 from ruamel.yaml import YAML
 
 from pydantic_numpy.util import np_general_all_close
@@ -59,8 +59,8 @@ class NumpyModel(BaseModel):
             return False
 
         if isinstance(other, NumpyModel):
-            self_ndarray_field_to_array, self_other_field_to_value = self._dump_numpy_split_dict()
-            other_ndarray_field_to_array, other_other_field_to_value = other._dump_numpy_split_dict()
+            self_ndarray_field_to_array, self_other_field_to_value = self.nm_dump_numpy_split_dict()
+            other_ndarray_field_to_array, other_other_field_to_value = other.nm_dump_numpy_split_dict()
 
             return self_other_field_to_value == other_other_field_to_value and _compare_np_array_dicts(
                 self_ndarray_field_to_array, other_ndarray_field_to_array
@@ -68,11 +68,6 @@ class NumpyModel(BaseModel):
 
         # Self is NumpyModel, other is not; likely unequal; checking anyway.
         return super().__eq__(other)
-
-    @classmethod
-    @validate_call
-    def model_directory_path(cls, output_directory: DirectoryPath, object_id: str) -> DirectoryPath:
-        return output_directory / f"{object_id}.{cls.__name__}{cls._directory_suffix}"
 
     @classmethod
     @validate_call
@@ -99,17 +94,17 @@ class NumpyModel(BaseModel):
         -------
         NumpyModel instance
         """
-        object_directory_path = cls.model_directory_path(output_directory, object_id)
+        object_directory_path = cls.nm_model_directory_path(output_directory, object_id)
 
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
         other_path: FilePath
-        if (other_path := object_directory_path / cls._dump_compressed_pickle_file_name).exists():  # type: ignore[operator]
+        if (other_path := object_directory_path / cls.nm_dump_compressed_pickle_file_name()).exists():  # type: ignore[operator]
             other_field_to_value = compress_pickle.load(other_path)
-        elif (other_path := object_directory_path / cls._dump_pickle_file_name).exists():  # type: ignore[operator]
+        elif (other_path := object_directory_path / cls.nm_dump_pickle_file_name()).exists():  # type: ignore[operator]
             with open(other_path, "rb") as in_pickle:
                 other_field_to_value = pickle_pkg.load(in_pickle)
-        elif (other_path := object_directory_path / cls._dump_non_array_yaml_name).exists():  # type: ignore[operator]
+        elif (other_path := object_directory_path / cls.nm_dump_non_array_yaml_name()).exists():  # type: ignore[operator]
             with open(other_path, "r") as in_yaml:
                 other_field_to_value = yaml.load(in_yaml)
         else:
@@ -129,10 +124,10 @@ class NumpyModel(BaseModel):
             self.model_config["arbitrary_types_allowed"] and pickle
         ), "Arbitrary types are only supported in pickle mode"
 
-        dump_directory_path = self.model_directory_path(output_directory, object_id)
+        dump_directory_path = self.nm_model_directory_path(output_directory, object_id)
         dump_directory_path.mkdir(parents=True, exist_ok=True)
 
-        ndarray_field_to_array, other_field_to_value = self._dump_numpy_split_dict()
+        ndarray_field_to_array, other_field_to_value = self.nm_dump_numpy_split_dict()
 
         if ndarray_field_to_array:
             (np.savez_compressed if compress else np.savez)(
@@ -144,20 +139,22 @@ class NumpyModel(BaseModel):
                 if compress:
                     compress_pickle.dump(
                         other_field_to_value,
-                        dump_directory_path / self._dump_compressed_pickle_file_name,  # pyright: ignore
+                        dump_directory_path / self.nm_dump_compressed_pickle_file_name(),  # pyright: ignore
                         compression=self._dump_compression,
                     )
                 else:
-                    with open(dump_directory_path / self._dump_pickle_file_name, "wb") as out_pickle:  # pyright: ignore
+                    with open(
+                        dump_directory_path / self.nm_dump_pickle_file_name(), "wb"
+                    ) as out_pickle:  # pyright: ignore
                         pickle_pkg.dump(other_field_to_value, out_pickle)
 
             else:
-                with open(dump_directory_path / self._dump_non_array_yaml_name, "w") as out_yaml:  # pyright: ignore
+                with open(dump_directory_path / self.nm_dump_non_array_yaml_name(), "w") as out_yaml:  # pyright: ignore
                     yaml.dump(other_field_to_value, out_yaml)
 
         return dump_directory_path
 
-    def _dump_numpy_split_dict(self) -> tuple[dict, dict]:
+    def nm_dump_numpy_split_dict(self) -> tuple[dict, dict]:
         ndarray_field_to_array = {}
         other_field_to_value = {}
 
@@ -169,22 +166,21 @@ class NumpyModel(BaseModel):
 
         return ndarray_field_to_array, other_field_to_value
 
-    @classmethod  # type: ignore[misc]
-    @computed_field(return_type=str)
-    @property
-    def _dump_compressed_pickle_file_name(cls) -> str:
+    @classmethod
+    @validate_call
+    def nm_model_directory_path(cls, output_directory: DirectoryPath, object_id: str) -> DirectoryPath:
+        return output_directory / f"{object_id}.{cls.__name__}{cls._directory_suffix}"
+
+    @classmethod
+    def nm_dump_compressed_pickle_file_name(cls) -> str:
         return f"{cls._dump_non_array_file_stem}.pickle.{cls._dump_compression}"
 
-    @classmethod  # type: ignore[misc]
-    @computed_field(return_type=str)
-    @property
-    def _dump_pickle_file_name(cls) -> str:
+    @classmethod
+    def nm_dump_pickle_file_name(cls) -> str:
         return f"{cls._dump_non_array_file_stem}.pickle"
 
-    @classmethod  # type: ignore[misc]
-    @computed_field(return_type=str)
-    @property
-    def _dump_non_array_yaml_name(cls) -> str:
+    @classmethod
+    def nm_dump_non_array_yaml_name(cls) -> str:
         return f"{cls._dump_non_array_file_stem}.yaml"
 
 
@@ -217,7 +213,7 @@ def model_agnostic_load(
     NumpyModel instance if found
     """
     for model in models:
-        if model.model_directory_path(output_directory, object_id).exists():
+        if model.nm_model_directory_path(output_directory, object_id).exists():
             return model.load(output_directory, object_id, **load_kwargs)
 
     if not_found_error:
