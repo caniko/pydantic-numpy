@@ -94,12 +94,8 @@ def _type_name_with_prefix(dimensions: int, type_name: str, strict: bool) -> str
     return f"Np{strict_prefix}{dimension_prefix}{type_name}"
 
 
-def _strict_type(dimension_type: str, dtype: str) -> str:
+def _type_hint(dimension_type: str, dtype: str) -> str:
     return f"np.ndarray[{dimension_type}, np.dtype[{dtype}]]"
-
-
-def _union_type(dimension_type: str, dtype: str) -> str:
-    return f"Union[np.ndarray[{dimension_type}, np.dtype[{dtype}]], FilePath, MultiArrayNumpyFile]"
 
 
 def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
@@ -110,7 +106,7 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
         return ""
 
     dtype = "Any" if data_type == "None" else data_type
-    T = _strict_type(dimension_type, dtype) if strict else _union_type(dimension_type, dtype)
+    T = _type_hint(dimension_type, dtype)
     dim = dimensions if dimensions > 0 else None
     annotation = f"""{type_with_prefix} = Annotated[
         {T},
@@ -138,13 +134,11 @@ __all__ = [
 
 
 def _generate_union_template(dimensions: int, contents: str, all_types: str) -> str:
-    template = f"""from typing import Annotated, Any, Union
+    template = f"""from typing import Annotated, Any
 
 import numpy as np
-from pydantic import FilePath
 
 from pydantic_numpy.helper.annotation import NpArrayPydanticAnnotation
-from pydantic_numpy.model import MultiArrayNumpyFile
 
 {contents.strip()}
 
