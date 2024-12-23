@@ -18,8 +18,8 @@ from tests.helper.cache import get_numpy_type_model
 from tests.helper.testing_groups import (
     data_type_array_typing_dimensions,
     data_type_nd_array_typing_dimensions_without_complex,
-    strict_data_type_nd_array_typing_dimensions,
     supported_data_types,
+    type_safe_data_type_nd_array_typing_dimensions,
 )
 
 
@@ -31,7 +31,7 @@ def test_correct_type(
 
 
 @pytest.mark.parametrize(
-    "numpy_array, numpy_dtype, pydantic_typing, dimensions", strict_data_type_nd_array_typing_dimensions
+    "numpy_array, numpy_dtype, pydantic_typing, dimensions", type_safe_data_type_nd_array_typing_dimensions
 )
 @pytest.mark.parametrize("bad_numpy_array, wrong_numpy_type", supported_data_types)
 def test_wrong_dtype_type(
@@ -56,7 +56,7 @@ def test_wrong_dimension():
 
 if platform.system() == "Linux":
     from tests.helper.testing_groups import (
-        get_strict_data_type_nd_array_typing_dimensions_128_bit,
+        get_type_safe_data_type_nd_array_typing_dimensions_128_bit,
     )
 
     @pytest.mark.parametrize(
@@ -120,7 +120,7 @@ if platform.system() == "Linux":
 
     @pytest.mark.parametrize(
         "numpy_array, numpy_dtype, pydantic_typing, dimensions",
-        get_strict_data_type_nd_array_typing_dimensions_128_bit(),
+        get_type_safe_data_type_nd_array_typing_dimensions_128_bit(),
     )
     def test_correct_128_bit_type(
         numpy_array: npt.ArrayLike, numpy_dtype: npt.DTypeLike, pydantic_typing, dimensions: Optional[int]
@@ -129,7 +129,7 @@ if platform.system() == "Linux":
 
     @pytest.mark.parametrize(
         "numpy_array, numpy_dtype, pydantic_typing, dimensions",
-        get_strict_data_type_nd_array_typing_dimensions_128_bit(),
+        get_type_safe_data_type_nd_array_typing_dimensions_128_bit(),
     )
     @pytest.mark.parametrize("bad_numpy_array, wrong_numpy_type", supported_data_types)
     def test_wrong_dtype_128_bit_type(

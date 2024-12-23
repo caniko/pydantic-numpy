@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Callable, ClassVar, Iterable, Optional, Union
+from typing import Any, Callable, ClassVar, Iterable, Optional, Union, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -55,12 +55,12 @@ def pd_np_native_numpy_array_to_data_dict_serializer(array_like: npt.ArrayLike) 
     """
     array = np.array(array_like)
 
-    if issubclass(array.dtype.type, np.timedelta64) or issubclass(array.dtype.type, np.datetime64):
-        data = array.astype(int).tolist()
-    else:
-        data = array.astype(float).tolist()
+    data = array.astype(
+        int if issubclass(array.dtype.type, np.timedelta64) or issubclass(array.dtype.type, np.datetime64) else float
+    ).tolist()
+    cast_data = cast(list, data)
 
-    return NumpyArrayTypeData(data_type=str(array.dtype), data=data)
+    return NumpyArrayTypeData(data_type=str(array.dtype), data=cast_data)
 
 
 def pd_np_native_numpy_array_json_schema_from_type_data(

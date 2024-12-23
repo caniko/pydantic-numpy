@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Union
+from typing import Annotated, Any, TypeAlias, Union
 
 import numpy as np
 from pydantic import FilePath
@@ -6,119 +6,119 @@ from pydantic import FilePath
 from pydantic_numpy.helper.annotation import NpArrayPydanticAnnotation
 from pydantic_numpy.model import MultiArrayNumpyFile
 
-Np3DArray = Annotated[
+NpLoading3DArray: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[Any]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=None, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayInt64 = Annotated[
+NpLoading3DArrayInt64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.int64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.int64, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayInt32 = Annotated[
+NpLoading3DArrayInt32: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.int32]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.int32, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayInt16 = Annotated[
+NpLoading3DArrayInt16: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.int16]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.int16, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayInt8 = Annotated[
+NpLoading3DArrayInt8: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.int8]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.int8, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayUint64 = Annotated[
+NpLoading3DArrayUint64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.uint64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.uint64, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayUint32 = Annotated[
+NpLoading3DArrayUint32: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.uint32]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.uint32, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayUint16 = Annotated[
+NpLoading3DArrayUint16: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.uint16]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.uint16, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayUint8 = Annotated[
+NpLoading3DArrayUint8: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.uint8]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.uint8, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayFpLongDouble = Annotated[
+NpLoading3DArrayFpLongDouble: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.longdouble]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.longdouble, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayFp64 = Annotated[
+NpLoading3DArrayFp64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.float64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.float64, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayFp32 = Annotated[
+NpLoading3DArrayFp32: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.float32]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.float32, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayFp16 = Annotated[
+NpLoading3DArrayFp16: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.float16]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.float16, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayComplexLongDouble = Annotated[
+NpLoading3DArrayComplexLongDouble: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.clongdouble]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.clongdouble, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayComplex128 = Annotated[
+NpLoading3DArrayComplex128: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.complex128]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.complex128, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayComplex64 = Annotated[
+NpLoading3DArrayComplex64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.complex64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.complex64, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayBool = Annotated[
+NpLoading3DArrayBool: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.bool_]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.bool_, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayDatetime64 = Annotated[
+NpLoading3DArrayDatetime64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.datetime64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.datetime64, dimensions=3, strict_data_typing=False),
 ]
 
-Np3DArrayTimedelta64 = Annotated[
+NpLoading3DArrayTimedelta64: TypeAlias = Annotated[
     Union[np.ndarray[tuple[int, int, int], np.dtype[np.timedelta64]], FilePath, MultiArrayNumpyFile],
     NpArrayPydanticAnnotation.factory(data_type=np.timedelta64, dimensions=3, strict_data_typing=False),
 ]
 
 __all__ = [
-    "Np3DArray",
-    "Np3DArrayInt64",
-    "Np3DArrayInt32",
-    "Np3DArrayInt16",
-    "Np3DArrayInt8",
-    "Np3DArrayUint64",
-    "Np3DArrayUint32",
-    "Np3DArrayUint16",
-    "Np3DArrayUint8",
-    "Np3DArrayFpLongDouble",
-    "Np3DArrayFp64",
-    "Np3DArrayFp32",
-    "Np3DArrayFp16",
-    "Np3DArrayComplexLongDouble",
-    "Np3DArrayComplex128",
-    "Np3DArrayComplex64",
-    "Np3DArrayBool",
-    "Np3DArrayDatetime64",
-    "Np3DArrayTimedelta64",
+    "NpLoading3DArray",
+    "NpLoading3DArrayInt64",
+    "NpLoading3DArrayInt32",
+    "NpLoading3DArrayInt16",
+    "NpLoading3DArrayInt8",
+    "NpLoading3DArrayUint64",
+    "NpLoading3DArrayUint32",
+    "NpLoading3DArrayUint16",
+    "NpLoading3DArrayUint8",
+    "NpLoading3DArrayFpLongDouble",
+    "NpLoading3DArrayFp64",
+    "NpLoading3DArrayFp32",
+    "NpLoading3DArrayFp16",
+    "NpLoading3DArrayComplexLongDouble",
+    "NpLoading3DArrayComplex128",
+    "NpLoading3DArrayComplex64",
+    "NpLoading3DArrayBool",
+    "NpLoading3DArrayDatetime64",
+    "NpLoading3DArrayTimedelta64",
 ]
