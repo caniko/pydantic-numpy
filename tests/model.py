@@ -1,6 +1,5 @@
-from pydantic_numpy import NpNDArray
 from pydantic_numpy.model import NumpyModel
-from pydantic_numpy.typing import Np1DArray
+from pydantic_numpy.typing import Np1DArray, NpNDArray
 
 
 class NpNDArrayModel(NumpyModel):

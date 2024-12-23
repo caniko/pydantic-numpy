@@ -18,7 +18,7 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
     -------
     None
     """
-    generate_template = _generate_strict_template if strict else _generate_union_template
+    generate_template = _generate_type_safe_template if strict else _generate_union_template
     for dimensions in _DIMENSION_TYPES:
         contents = "\n".join(_annotate_type(dimensions, type_name, strict) for type_name in _DATA_TYPES)
         all_types = "\n".join(
@@ -30,7 +30,7 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
             f.write(generate_template(dimensions, contents, all_types))
 
 
-_DATA_TYPES: Final = {
+_DATA_TYPES: Final[dict[str, str]] = {
     "": "None",
     "Int64": "np.int64",
     "Int32": "np.int32",
@@ -52,28 +52,28 @@ _DATA_TYPES: Final = {
     "Timedelta64": "np.timedelta64",
 }
 
-_DIMENSION_TYPES: Final = {
+_DIMENSION_TYPES: Final[dict[int, str]] = {
     0: "Any",
     1: "tuple[int]",
     2: "tuple[int, int]",
     3: "tuple[int, int, int]",
 }
 
-_DIMENSIONS_TO_PREFIX: Final = {
+_DIMENSIONS_TO_PREFIX: Final[dict[int, str]] = {
     0: "NDArray",
     1: "1DArray",
     2: "2DArray",
     3: "3DArray",
 }
 
-_DIMENSIONS_TO_FILENAME: Final = {
+_DIMENSIONS_TO_FILENAME: Final[dict[int, str]] = {
     0: "n_dimensional.py",
     1: "i_dimensional.py",
     2: "ii_dimensional.py",
     3: "iii_dimensional.py",
 }
 
-_SPACES: Final = "    "
+_SPACES: Final[str] = "    "
 
 
 def _unindent(text: str) -> str:
@@ -89,7 +89,7 @@ def _quote(text: str) -> str:
 
 
 def _type_name_with_prefix(dimensions: int, type_name: str, strict: bool) -> str:
-    strict_prefix = "Strict" if strict else ""
+    strict_prefix = "" if strict else "Loading"
     dimension_prefix = _DIMENSIONS_TO_PREFIX[dimensions]
     return f"Np{strict_prefix}{dimension_prefix}{type_name}"
 
@@ -106,23 +106,20 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
     dimension_type = _DIMENSION_TYPES[dimensions]
     type_with_prefix = _type_name_with_prefix(dimensions, type_name, strict)
     data_type = _DATA_TYPES[type_name]
-    if data_type == "None" and strict:
-        return ""
 
     dtype = "Any" if data_type == "None" else data_type
     T = _strict_type(dimension_type, dtype) if strict else _union_type(dimension_type, dtype)
     dim = dimensions if dimensions > 0 else None
-    annotation = f"""{type_with_prefix} = Annotated[
+    annotation = f"""{type_with_prefix}: TypeAlias = Annotated[
         {T},
-        NpArrayPydanticAnnotation.factory(data_type={data_type}, dimensions={dim}, strict_data_typing={strict}),
+        NpArrayPydanticAnnotation.factory(data_type={data_type}, dimensions={dim}, strict_data_typing={data_type != "None" and strict}),
     ]
 """
     return _unindent(annotation)
 
 
-def _generate_strict_template(dimensions: int, contents: str, all_types: str) -> str:
-    from_typing = "from typing import Annotated, Any" if dimensions == 0 else "from typing import Annotated"
-    template = f"""{from_typing}
+def _generate_type_safe_template(dimensions: int, contents: str, all_types: str) -> str:
+    template = f"""from typing import Annotated, Any, TypeAlias
 
 import numpy as np
 
@@ -138,7 +135,7 @@ __all__ = [
 
 
 def _generate_union_template(dimensions: int, contents: str, all_types: str) -> str:
-    template = f"""from typing import Annotated, Any, Union
+    template = f"""from typing import Annotated, Any, TypeAlias, Union
 
 import numpy as np
 from pydantic import FilePath
@@ -156,13 +153,9 @@ __all__ = [
 
 
 def _list_all_types(dimensions: int, strict: bool) -> list[str]:
-    return [
-        _type_name_with_prefix(dimensions, type_name, strict)
-        for type_name in _DATA_TYPES
-        if not (type_name == "" and strict)
-    ]
+    return [_type_name_with_prefix(dimensions, type_name, strict) for type_name in _DATA_TYPES]
 
 
 if __name__ == "__main__":
-    write_annotations(Path("pydantic_numpy/typing"), strict=False)
-    write_annotations(Path("pydantic_numpy/typing/strict_data_type"), strict=True)
+    write_annotations(Path("pydantic_numpy/typing/with_loader"), strict=False)
+    write_annotations(Path("pydantic_numpy/typing/type_safe"), strict=True)
