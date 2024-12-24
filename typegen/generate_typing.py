@@ -110,7 +110,7 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
     dtype = "Any" if data_type == "None" else data_type
     T = _strict_type(dimension_type, dtype) if strict else _union_type(dimension_type, dtype)
     dim = dimensions if dimensions > 0 else None
-    annotation = f"""{type_with_prefix}: TypeAlias = Annotated[
+    annotation = f"""type {type_with_prefix} = Annotated[
         {T},
         NpArrayPydanticAnnotation.factory(data_type={data_type}, dimensions={dim}, strict_data_typing={data_type != "None" and strict}),
     ]
@@ -119,7 +119,7 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
 
 
 def _generate_type_safe_template(dimensions: int, contents: str, all_types: str) -> str:
-    template = f"""from typing import Annotated, Any, TypeAlias
+    template = f"""from typing import Annotated, Any
 
 import numpy as np
 
@@ -135,7 +135,7 @@ __all__ = [
 
 
 def _generate_union_template(dimensions: int, contents: str, all_types: str) -> str:
-    template = f"""from typing import Annotated, Any, TypeAlias, Union
+    template = f"""from typing import Annotated, Any, Union
 
 import numpy as np
 from pydantic import FilePath
