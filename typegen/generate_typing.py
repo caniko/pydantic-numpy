@@ -19,7 +19,7 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
     None
     """
     generate_template = _generate_type_safe_template if strict else _generate_union_template
-    for dimensions in _DIMENSION_TYPES:
+    for dimensions, filename in _DIMENSIONS_TO_FILENAME.items():
         contents = "\n".join(_annotate_type(dimensions, type_name, strict) for type_name in _DATA_TYPES)
         all_types = "\n".join(
             _indent(f"{_quote(full_type_name)},") for full_type_name in _list_all_types(dimensions, strict)
@@ -27,7 +27,7 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
         filename = output_folder / _DIMENSIONS_TO_FILENAME[dimensions]
         print(f"Writing {filename}..")
         with open(filename, "w") as f:
-            f.write(generate_template(dimensions, contents, all_types))
+            f.write(generate_template(contents, all_types))
 
 
 _DATA_TYPES: Final[dict[str, str]] = {
@@ -50,13 +50,6 @@ _DATA_TYPES: Final[dict[str, str]] = {
     "Bool": "np.bool_",
     "Datetime64": "np.datetime64",
     "Timedelta64": "np.timedelta64",
-}
-
-_DIMENSION_TYPES: Final[dict[int, str]] = {
-    0: "Any",
-    1: "tuple[int]",
-    2: "tuple[int, int]",
-    3: "tuple[int, int, int]",
 }
 
 _DIMENSIONS_TO_PREFIX: Final[dict[int, str]] = {
@@ -103,11 +96,11 @@ def _union_type(dimension_type: str, dtype: str) -> str:
 
 
 def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
-    dimension_type = _DIMENSION_TYPES[dimensions]
     type_with_prefix = _type_name_with_prefix(dimensions, type_name, strict)
     data_type = _DATA_TYPES[type_name]
 
     dtype = "Any" if data_type == "None" else data_type
+    dimension_type = "tuple[int, ...]"
     T = _strict_type(dimension_type, dtype) if strict else _union_type(dimension_type, dtype)
     dim = dimensions if dimensions > 0 else None
     annotation = f"""{type_with_prefix}: TypeAlias = Annotated[
@@ -118,7 +111,7 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
     return _unindent(annotation)
 
 
-def _generate_type_safe_template(dimensions: int, contents: str, all_types: str) -> str:
+def _generate_type_safe_template(contents: str, all_types: str) -> str:
     template = f"""from typing import Annotated, Any, TypeAlias
 
 import numpy as np
@@ -134,7 +127,7 @@ __all__ = [
     return template
 
 
-def _generate_union_template(dimensions: int, contents: str, all_types: str) -> str:
+def _generate_union_template(contents: str, all_types: str) -> str:
     template = f"""from typing import Annotated, Any, TypeAlias, Union
 
 import numpy as np
