@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, ClassVar, Iterable, Optional
 
-import compress_pickle
+import compress_pickle  # type: ignore[import-untyped]
 import numpy as np
 import numpy.typing as npt
 from pydantic import BaseModel, DirectoryPath, FilePath, validate_call
@@ -29,7 +29,9 @@ class MultiArrayNumpyFile:
         -------
         NDArray
         """
-        loaded = _cached_np_array_load(self.path) if self.cached_load else np.load(self.path)
+        loaded = (
+            _cached_np_array_load(self.path) if self.cached_load else np.load(self.path)
+        )
         try:
             return loaded[self.key]
         except IndexError:
@@ -53,17 +55,25 @@ class NumpyModel(BaseModel):
 
         if not (
             self_type == other_type
-            and getattr(self, "__pydantic_private__", None) == getattr(other, "__pydantic_private__", None)
+            and getattr(self, "__pydantic_private__", None)
+            == getattr(other, "__pydantic_private__", None)
             and self.__pydantic_extra__ == other.__pydantic_extra__
         ):
             return False
 
         if isinstance(other, NumpyModel):
-            self_ndarray_field_to_array, self_other_field_to_value = self.nm_dump_numpy_split_dict()
-            other_ndarray_field_to_array, other_other_field_to_value = other.nm_dump_numpy_split_dict()
+            self_ndarray_field_to_array, self_other_field_to_value = (
+                self.nm_dump_numpy_split_dict()
+            )
+            other_ndarray_field_to_array, other_other_field_to_value = (
+                other.nm_dump_numpy_split_dict()
+            )
 
-            return self_other_field_to_value == other_other_field_to_value and _compare_np_array_dicts(
-                self_ndarray_field_to_array, other_ndarray_field_to_array
+            return (
+                self_other_field_to_value == other_other_field_to_value
+                and _compare_np_array_dicts(
+                    self_ndarray_field_to_array, other_ndarray_field_to_array
+                )
             )
 
         # Self is NumpyModel, other is not; likely unequal; checking anyway.
@@ -99,12 +109,19 @@ class NumpyModel(BaseModel):
         npz_file = np.load(object_directory_path / cls._dump_numpy_savez_file_name)
 
         other_path: FilePath
-        if (other_path := object_directory_path / cls.nm_dump_compressed_pickle_file_name()).exists():  # type: ignore[operator]
+        if (
+            other_path := object_directory_path
+            / cls.nm_dump_compressed_pickle_file_name()
+        ).exists():  # type: ignore[operator]
             other_field_to_value = compress_pickle.load(other_path)
-        elif (other_path := object_directory_path / cls.nm_dump_pickle_file_name()).exists():  # type: ignore[operator]
+        elif (
+            other_path := object_directory_path / cls.nm_dump_pickle_file_name()
+        ).exists():  # type: ignore[operator]
             with open(other_path, "rb") as in_pickle:
                 other_field_to_value = pickle_pkg.load(in_pickle)
-        elif (other_path := object_directory_path / cls.nm_dump_non_array_yaml_name()).exists():  # type: ignore[operator]
+        elif (
+            other_path := object_directory_path / cls.nm_dump_non_array_yaml_name()
+        ).exists():  # type: ignore[operator]
             with open(other_path, "r") as in_yaml:
                 other_field_to_value = yaml.load(in_yaml)
         else:
@@ -118,7 +135,12 @@ class NumpyModel(BaseModel):
 
     @validate_call
     def dump(
-        self, output_directory: Path, object_id: str, *, compress: bool = True, pickle: bool = False
+        self,
+        output_directory: Path,
+        object_id: str,
+        *,
+        compress: bool = True,
+        pickle: bool = False,
     ) -> DirectoryPath:
         assert "arbitrary_types_allowed" not in self.model_config or (
             self.model_config["arbitrary_types_allowed"] and pickle
@@ -131,7 +153,8 @@ class NumpyModel(BaseModel):
 
         if ndarray_field_to_array:
             (np.savez_compressed if compress else np.savez)(
-                dump_directory_path / self._dump_numpy_savez_file_name, **ndarray_field_to_array
+                dump_directory_path / self._dump_numpy_savez_file_name,
+                **ndarray_field_to_array,
             )
 
         if other_field_to_value:
@@ -139,7 +162,8 @@ class NumpyModel(BaseModel):
                 if compress:
                     compress_pickle.dump(
                         other_field_to_value,
-                        dump_directory_path / self.nm_dump_compressed_pickle_file_name(),  # pyright: ignore
+                        dump_directory_path
+                        / self.nm_dump_compressed_pickle_file_name(),  # pyright: ignore
                         compression=self._dump_compression,
                     )
                 else:
@@ -149,7 +173,9 @@ class NumpyModel(BaseModel):
                         pickle_pkg.dump(other_field_to_value, out_pickle)
 
             else:
-                with open(dump_directory_path / self.nm_dump_non_array_yaml_name(), "w") as out_yaml:  # pyright: ignore
+                with open(
+                    dump_directory_path / self.nm_dump_non_array_yaml_name(), "w"
+                ) as out_yaml:  # pyright: ignore
                     yaml.dump(other_field_to_value, out_yaml)
 
         return dump_directory_path
@@ -168,7 +194,9 @@ class NumpyModel(BaseModel):
 
     @classmethod
     @validate_call
-    def nm_model_directory_path(cls, output_directory: DirectoryPath, object_id: str) -> DirectoryPath:
+    def nm_model_directory_path(
+        cls, output_directory: DirectoryPath, object_id: str
+    ) -> DirectoryPath:
         return output_directory / f"{object_id}.{cls.__name__}{cls._directory_suffix}"
 
     @classmethod
@@ -243,7 +271,10 @@ def _cached_np_array_load(path: FilePath):
 
 
 def _compare_np_array_dicts(
-    dict_a: dict[str, npt.NDArray], dict_b: dict[str, npt.NDArray], rtol: float = 1e-05, atol: float = 1e-08
+    dict_a: dict[str, npt.NDArray],
+    dict_b: dict[str, npt.NDArray],
+    rtol: float = 1e-05,
+    atol: float = 1e-08,
 ) -> bool:
     """
     Compare two dictionaries containing numpy arrays as values.
@@ -266,7 +297,9 @@ def _compare_np_array_dicts(
         arr_a = dict_a[key]
         arr_b = dict_b[key]
 
-        if arr_a.shape != arr_b.shape or not np_general_all_close(arr_a, arr_b, rtol, atol):
+        if arr_a.shape != arr_b.shape or not np_general_all_close(
+            arr_a, arr_b, rtol, atol
+        ):
             return False
 
     return True

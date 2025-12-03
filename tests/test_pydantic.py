@@ -14,7 +14,11 @@ class TestModelValidation(unittest.TestCase):
             "properties": {
                 "array": {
                     "properties": {
-                        "data_type": {"default": "Any", "title": "dtype", "type": "string"},
+                        "data_type": {
+                            "default": "Any",
+                            "title": "dtype",
+                            "type": "string",
+                        },
                         "data": {"items_schema": {"type": "any"}, "type": "list"},
                     },
                     "required": ["data_type", "data"],
@@ -34,9 +38,16 @@ class TestModelValidation(unittest.TestCase):
             "properties": {
                 "array": {
                     "properties": {
-                        "data_type": {"default": "Any", "title": "dtype", "type": "string"},
+                        "data_type": {
+                            "default": "Any",
+                            "title": "dtype",
+                            "type": "string",
+                        },
                         "data": {
-                            "items_schema": {"items_schema": {"type": "any"}, "type": "list"},
+                            "items_schema": {
+                                "items_schema": {"type": "any"},
+                                "type": "list",
+                            },
                             "max_length": 1,
                             "min_length": 1,
                             "type": "list",

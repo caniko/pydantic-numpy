@@ -18,15 +18,20 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
     -------
     None
     """
-    generate_template = _generate_type_safe_template if strict else _generate_union_template
-    for dimensions, filename in _DIMENSIONS_TO_FILENAME.items():
-        contents = "\n".join(_annotate_type(dimensions, type_name, strict) for type_name in _DATA_TYPES)
-        all_types = "\n".join(
-            _indent(f"{_quote(full_type_name)},") for full_type_name in _list_all_types(dimensions, strict)
+    generate_template = (
+        _generate_type_safe_template if strict else _generate_union_template
+    )
+    for dimensions in _DIMENSIONS_TO_FILENAME.keys():
+        contents = "\n".join(
+            _annotate_type(dimensions, type_name, strict) for type_name in _DATA_TYPES
         )
-        filename = output_folder / _DIMENSIONS_TO_FILENAME[dimensions]
-        print(f"Writing {filename}..")
-        with open(filename, "w") as f:
+        all_types = "\n".join(
+            _indent(f"{_quote(full_type_name)},")
+            for full_type_name in _list_all_types(dimensions, strict)
+        )
+        file_path = output_folder / _DIMENSIONS_TO_FILENAME[dimensions]
+        print(f"Writing {file_path}..")
+        with open(file_path, "w") as f:
             f.write(generate_template(contents, all_types))
 
 
@@ -101,7 +106,11 @@ def _annotate_type(dimensions: int, type_name: str, strict: bool) -> str:
 
     dtype = "Any" if data_type == "None" else data_type
     dimension_type = "tuple[int, ...]"
-    T = _strict_type(dimension_type, dtype) if strict else _union_type(dimension_type, dtype)
+    T = (
+        _strict_type(dimension_type, dtype)
+        if strict
+        else _union_type(dimension_type, dtype)
+    )
     dim = dimensions if dimensions > 0 else None
     annotation = f"""{type_with_prefix}: TypeAlias = Annotated[
         {T},
@@ -146,7 +155,10 @@ __all__ = [
 
 
 def _list_all_types(dimensions: int, strict: bool) -> list[str]:
-    return [_type_name_with_prefix(dimensions, type_name, strict) for type_name in _DATA_TYPES]
+    return [
+        _type_name_with_prefix(dimensions, type_name, strict)
+        for type_name in _DATA_TYPES
+    ]
 
 
 if __name__ == "__main__":

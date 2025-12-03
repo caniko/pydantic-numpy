@@ -34,20 +34,30 @@ if platform.system() != "Windows":
     def test_io_yaml(numpy_model: NpNDArrayModelWithNonArray) -> None:
         with tempfile.TemporaryDirectory() as tmp_dirname:
             numpy_model.dump(Path(tmp_dirname), TEST_MODEL_OBJECT_ID)
-            assert numpy_model.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID) == numpy_model
-
-    def test_io_compressed_pickle(numpy_model_with_arbitrary: NpNDArrayModelWithNonArray) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dirname:
-            numpy_model_with_arbitrary.dump(Path(tmp_dirname), TEST_MODEL_OBJECT_ID, pickle=True)
             assert (
-                numpy_model_with_arbitrary.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID) == numpy_model_with_arbitrary
+                numpy_model.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID) == numpy_model
+            )
+
+    def test_io_compressed_pickle(
+        numpy_model_with_arbitrary: NpNDArrayModelWithNonArray,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            numpy_model_with_arbitrary.dump(
+                Path(tmp_dirname), TEST_MODEL_OBJECT_ID, pickle=True
+            )
+            assert (
+                numpy_model_with_arbitrary.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID)
+                == numpy_model_with_arbitrary
             )
 
     def test_io_pickle(numpy_model_with_arbitrary: NpNDArrayModelWithNonArray) -> None:
         with tempfile.TemporaryDirectory() as tmp_dirname:
-            numpy_model_with_arbitrary.dump(Path(tmp_dirname), TEST_MODEL_OBJECT_ID, pickle=True, compress=False)
+            numpy_model_with_arbitrary.dump(
+                Path(tmp_dirname), TEST_MODEL_OBJECT_ID, pickle=True, compress=False
+            )
             assert (
-                numpy_model_with_arbitrary.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID) == numpy_model_with_arbitrary
+                numpy_model_with_arbitrary.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID)
+                == numpy_model_with_arbitrary
             )
 
     def test_model_agnostic_load():
@@ -69,8 +79,12 @@ if platform.system() != "Windows":
             model_b.dump(tmp_dir_path, OTHER_TEST_MODEL_OBJECT_ID)
 
             models = [NumpyModelAForTest, NumpyModelBForTest]
-            assert model_a == model_agnostic_load(tmp_dir_path, TEST_MODEL_OBJECT_ID, models=models)
-            assert model_b == model_agnostic_load(tmp_dir_path, OTHER_TEST_MODEL_OBJECT_ID, models=models)
+            assert model_a == model_agnostic_load(
+                tmp_dir_path, TEST_MODEL_OBJECT_ID, models=models
+            )
+            assert model_b == model_agnostic_load(
+                tmp_dir_path, OTHER_TEST_MODEL_OBJECT_ID, models=models
+            )
 
     def test_simple_eq(numpy_model: NpNDArrayModelWithNonArray) -> None:
         assert numpy_model == numpy_model
@@ -84,10 +98,14 @@ if platform.system() != "Windows":
         assert numpy_model != AnotherModel(yarra=np.array([0.0]))
 
     def test_not_eq_different_inner(numpy_model: NpNDArrayModelWithNonArray) -> None:
-        assert numpy_model != NpNDArrayModelWithNonArray(array=np.array([1.0]), non_array=NON_ARRAY_VALUE)
+        assert numpy_model != NpNDArrayModelWithNonArray(
+            array=np.array([1.0]), non_array=NON_ARRAY_VALUE
+        )
 
     def test_not_eq_different_shape(numpy_model: NpNDArrayModelWithNonArray) -> None:
-        assert numpy_model != NpNDArrayModelWithNonArray(array=np.array([0.0, 1.0]), non_array=NON_ARRAY_VALUE)
+        assert numpy_model != NpNDArrayModelWithNonArray(
+            array=np.array([0.0, 1.0]), non_array=NON_ARRAY_VALUE
+        )
 
     def test_random_not_eq(numpy_model: NpNDArrayModelWithNonArray) -> None:
         for r in (0, 5, 1.0, "1"):

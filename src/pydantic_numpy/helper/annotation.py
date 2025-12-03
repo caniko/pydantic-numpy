@@ -18,7 +18,9 @@ from pydantic_numpy.helper.validation import (
 from pydantic_numpy.model import MultiArrayNumpyFile
 
 
-def pd_np_native_numpy_array_to_data_dict_serializer(array_like: npt.ArrayLike) -> NumpyArrayTypeData:
+def pd_np_native_numpy_array_to_data_dict_serializer(
+    array_like: npt.ArrayLike,
+) -> NumpyArrayTypeData:
     """
     Serialize a NumPy array into a data dictionary format suitable for frontend display or processing.
 
@@ -56,7 +58,10 @@ def pd_np_native_numpy_array_to_data_dict_serializer(array_like: npt.ArrayLike) 
     array = np.array(array_like)
 
     data = array.astype(
-        int if issubclass(array.dtype.type, np.timedelta64) or issubclass(array.dtype.type, np.datetime64) else float
+        int
+        if issubclass(array.dtype.type, np.timedelta64)
+        or issubclass(array.dtype.type, np.datetime64)
+        else float
     ).tolist()
     cast_data = cast(list, data)
 
@@ -104,7 +109,9 @@ def pd_np_native_numpy_array_json_schema_from_type_data(
         array_data_type = data_type.__name__
         item_schema = core_schema.list_schema(
             items_schema=core_schema.any_schema(
-                metadata=dict(typing=f"Must be compatible with numpy.dtype: {array_data_type}")
+                metadata=dict(
+                    typing=f"Must be compatible with numpy.dtype: {array_data_type}"
+                )
             )
         )
     else:
@@ -112,7 +119,9 @@ def pd_np_native_numpy_array_json_schema_from_type_data(
         item_schema = core_schema.list_schema(items_schema=core_schema.any_schema())
 
     if dimensions:
-        data_schema = core_schema.list_schema(items_schema=item_schema, min_length=dimensions, max_length=dimensions)
+        data_schema = core_schema.list_schema(
+            items_schema=item_schema, min_length=dimensions, max_length=dimensions
+        )
     else:
         data_schema = item_schema
 
@@ -136,7 +145,12 @@ class NpArrayPydanticAnnotation:
     serialize_numpy_array_to_json: ClassVar[Callable[[npt.ArrayLike], Iterable]]
     json_schema_from_type_data: ClassVar[
         Callable[
-            [core_schema.CoreSchema, GetJsonSchemaHandler, Optional[PositiveInt], Optional[SupportedDTypes]],
+            [
+                core_schema.CoreSchema,
+                GetJsonSchemaHandler,
+                Optional[PositiveInt],
+                Optional[SupportedDTypes],
+            ],
             JsonSchemaValue,
         ]
     ]
@@ -152,7 +166,12 @@ class NpArrayPydanticAnnotation:
             [npt.ArrayLike], Iterable
         ] = pd_np_native_numpy_array_to_data_dict_serializer,
         json_schema_from_type_data: Callable[
-            [core_schema.CoreSchema, GetJsonSchemaHandler, Optional[PositiveInt], Optional[SupportedDTypes]],
+            [
+                core_schema.CoreSchema,
+                GetJsonSchemaHandler,
+                Optional[PositiveInt],
+                Optional[SupportedDTypes],
+            ],
             JsonSchemaValue,
         ] = pd_np_native_numpy_array_json_schema_from_type_data,
     ) -> type:
@@ -204,11 +223,17 @@ class NpArrayPydanticAnnotation:
         _source_type: Any,
         _handler: Callable[[Any], core_schema.CoreSchema],
     ) -> core_schema.CoreSchema:
-        np_array_validator = create_array_validator(cls.dimensions, cls.data_type, cls.strict_data_typing)
-        np_array_schema = core_schema.no_info_plain_validator_function(np_array_validator)
+        np_array_validator = create_array_validator(
+            cls.dimensions, cls.data_type, cls.strict_data_typing
+        )
+        np_array_schema = core_schema.no_info_plain_validator_function(
+            np_array_validator
+        )
 
         return core_schema.json_or_python_schema(
-            python_schema=core_schema.chain_schema([_common_numpy_array_validator, np_array_schema]),
+            python_schema=core_schema.chain_schema(
+                [_common_numpy_array_validator, np_array_schema]
+            ),
             json_schema=np_array_schema,
             serialization=core_schema.plain_serializer_function_ser_schema(
                 cls.serialize_numpy_array_to_json,
@@ -221,7 +246,9 @@ class NpArrayPydanticAnnotation:
     def __get_pydantic_json_schema__(
         cls, field_core_schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler
     ) -> JsonSchemaValue:
-        return cls.json_schema_from_type_data(field_core_schema, handler, cls.dimensions, cls.data_type)
+        return cls.json_schema_from_type_data(
+            field_core_schema, handler, cls.dimensions, cls.data_type
+        )
 
 
 def np_array_pydantic_annotated_typing(
@@ -279,7 +306,9 @@ def _data_type_resolver(data_type: Optional[SupportedDTypes]) -> bool:
 
 
 @validate_call
-def _deserialize_numpy_array_from_data_dict(data_dict: NumpyArrayTypeData) -> np.ndarray:
+def _deserialize_numpy_array_from_data_dict(
+    data_dict: NumpyArrayTypeData,
+) -> np.ndarray:
     return np.array(data_dict["data"]).astype(data_dict["data_type"])
 
 
@@ -311,7 +340,9 @@ _common_numpy_array_validator = core_schema.union_schema(
         core_schema.chain_schema(
             [
                 core_schema.is_instance_schema(MultiArrayNumpyFile),
-                core_schema.no_info_plain_validator_function(validate_multi_array_numpy_file),
+                core_schema.no_info_plain_validator_function(
+                    validate_multi_array_numpy_file
+                ),
             ]
         ),
         core_schema.is_instance_schema(np.ndarray),
@@ -324,7 +355,9 @@ _common_numpy_array_validator = core_schema.union_schema(
         core_schema.chain_schema(
             [
                 core_schema.is_instance_schema(dict),
-                core_schema.no_info_plain_validator_function(_deserialize_numpy_array_from_data_dict),
+                core_schema.no_info_plain_validator_function(
+                    _deserialize_numpy_array_from_data_dict
+                ),
             ]
         ),
     ]
