@@ -69,7 +69,12 @@ data_type_3d_array_typing_dimensions = [
     (np.array([[[0.0]]], dtype=np.float32), np.float32, Np3DArrayFp32, 3),
     (np.array([[[0.0]]], dtype=np.float16), np.float16, Np3DArrayFp16, 3),
     (np.array([[[0.0 + 0.0j]]]), np.complex128, Np3DArrayComplex128, 3),
-    (np.array([[[0.0 + 0.0j]]], dtype=np.complex64), np.complex64, Np3DArrayComplex64, 3),
+    (
+        np.array([[[0.0 + 0.0j]]], dtype=np.complex64),
+        np.complex64,
+        Np3DArrayComplex64,
+        3,
+    ),
     (np.array([[[False]]]), np.bool_, Np3DArrayBool, 3),
     (np.array([[[0]]], dtype=np.timedelta64), np.timedelta64, Np3DArrayTimedelta64, 3),
 ]
@@ -92,7 +97,12 @@ data_type_nd_array_typing_dimensions_without_complex = [
 data_type_nd_array_typing_dimensions = [
     *data_type_nd_array_typing_dimensions_without_complex,
     (np.array([0.0 + 0.0j]), np.complex128, NpNDArrayComplex128, None),
-    (np.array([0.0 + 0.0j], dtype=np.complex64), np.complex64, NpNDArrayComplex64, None),
+    (
+        np.array([0.0 + 0.0j], dtype=np.complex64),
+        np.complex64,
+        NpNDArrayComplex64,
+        None,
+    ),
 ]
 
 data_type_array_typing_dimensions = [
@@ -150,7 +160,12 @@ type_safe_data_type_3d_array_typing_dimensions = [
     (np.array([[[0.0]]], dtype=np.float32), np.float32, Np3DArrayFp32, 3),
     (np.array([[[0.0]]], dtype=np.float16), np.float16, Np3DArrayFp16, 3),
     (np.array([[[0.0 + 0.0j]]]), np.complex128, Np3DArrayComplex128, 3),
-    (np.array([[[0.0 + 0.0j]]], dtype=np.complex64), np.complex64, Np3DArrayComplex64, 3),
+    (
+        np.array([[[0.0 + 0.0j]]], dtype=np.complex64),
+        np.complex64,
+        Np3DArrayComplex64,
+        3,
+    ),
     (np.array([[[False]]]), np.bool_, Np3DArrayBool, 3),
     (np.array([[[0]]], dtype=np.timedelta64), np.timedelta64, Np3DArrayTimedelta64, 3),
 ]
@@ -167,7 +182,12 @@ type_safe_data_type_nd_array_typing_dimensions = [
     (np.array([0.0], dtype=np.float32), np.float32, NpNDArrayFp32, None),
     (np.array([0.0], dtype=np.float16), np.float16, NpNDArrayFp16, None),
     (np.array([0.0 + 0.0j]), np.complex128, NpNDArrayComplex128, None),
-    (np.array([0.0 + 0.0j], dtype=np.complex64), np.complex64, NpNDArrayComplex64, None),
+    (
+        np.array([0.0 + 0.0j], dtype=np.complex64),
+        np.complex64,
+        NpNDArrayComplex64,
+        None,
+    ),
     (np.array([False]), np.bool_, NpNDArrayBool, None),
     (np.array([0], dtype=np.timedelta64), np.timedelta64, NpNDArrayTimedelta64, None),
 ]
@@ -189,6 +209,16 @@ if platform.system() != "Windows":
 
     def get_type_safe_data_type_nd_array_typing_dimensions_128_bit():
         return [
-            (np.array([0.0], dtype=np.float128), np.float128, NpNDArrayFpLongDouble, None),
-            (np.array([0.0 + 0.0j], dtype=np.complex256), np.complex256, NpNDArrayComplexLongDouble, None),
+            (
+                np.array([0.0], dtype=np.float128),
+                np.float128,
+                NpNDArrayFpLongDouble,
+                None,
+            ),
+            (
+                np.array([0.0 + 0.0j], dtype=np.complex256),
+                np.complex256,
+                NpNDArrayComplexLongDouble,
+                None,
+            ),
         ]

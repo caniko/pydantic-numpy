@@ -15,7 +15,9 @@ class PydanticNumpyMultiArrayNumpyFileOnFilePath(Exception):
 
 
 def create_array_validator(
-    dimensions: Optional[int], target_data_type: SupportedDTypes, strict_data_typing: bool
+    dimensions: Optional[int],
+    target_data_type: SupportedDTypes,
+    strict_data_typing: bool,
 ) -> Callable[[npt.NDArray], npt.NDArray]:
     """
     Creates a validator that ensures the numpy array has the defined dimensions and dtype (data_type).
@@ -36,7 +38,9 @@ def create_array_validator(
     Validator for numpy array
     """
 
-    def array_validator(array_data: Union[npt.NDArray, NumpyArrayTypeData]) -> npt.NDArray:
+    def array_validator(
+        array_data: Union[npt.NDArray, NumpyArrayTypeData],
+    ) -> npt.NDArray:
         array: npt.NDArray
         if isinstance(array_data, dict):
             array = np.array(array_data["data"], dtype=array_data["data_type"])
@@ -52,7 +56,9 @@ def create_array_validator(
                 msg = f"The data_type {array.dtype.type} does not coincide with type hint; {target_data_type}"
                 raise ValueError(msg)
 
-            if issubclass(target_data_type, integer) and issubclass(array.dtype.type, floating):
+            if issubclass(target_data_type, integer) and issubclass(
+                array.dtype.type, floating
+            ):
                 array = np.round(array).astype(target_data_type, copy=False)
             else:
                 array = array.astype(target_data_type, copy=True)
