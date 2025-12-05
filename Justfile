@@ -2,10 +2,10 @@ test:
     uv run pytest tests
 
 mypy:
-    uv run --group type-check mypy src/
+    uv run --group type-check mypy .
 
-mypy_test:
-    uv run --group type-check mypy tests/
+pyright:
+    uv run --group type-check pyright .
 
 typegen:
     uv run python typegen/generate_typing.py

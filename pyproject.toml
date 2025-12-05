@@ -1,6 +1,6 @@
 [project]
 name = "pydantic_numpy"
-version = "9.0.0"
+version = "9.0.1"
 description = "Pydantic Model integration of the NumPy array"
 authors = [
     { name = "Can H. Tartanoglu", email = "gpg@rotas.mozmail.com" },
@@ -32,6 +32,8 @@ dev = [
 test = [
     "pytest~=9.0.1",
     "coverage~=7.12.0",
+    "jsonschema~=4.25.1",
+    "types-jsonschema"
 ]
 type-check = [
     "mypy",

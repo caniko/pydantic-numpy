@@ -1,10 +1,7 @@
 # pydantic-numpy
 
-![Python 3.10-3.13](https://img.shields.io/badge/python-3.10--3.13-blue.svg)
+![Python 3.11-3.14](https://img.shields.io/badge/python-3.10--3.13-blue.svg)
 [![Packaged with uv](https://img.shields.io/badge/packaging-uv-de2d60.svg)](https://docs.astral.sh/uv/)
-![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)
-![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
 
 ## Usage
@@ -54,6 +51,50 @@ cfg.k   # np.ndarray[np.float32]
 
 cfg.dump("path_to_dump_dir", "object_id")
 cfg.load("path_to_dump_dir", "object_id")
+```
+
+### JSON Serialization
+
+Models with numpy arrays can be serialized to JSON and back:
+
+```python
+import numpy as np
+from pydantic import BaseModel
+import pydantic_numpy.typing as pnd
+
+class MyModel(BaseModel):
+    array: pnd.Np1DArrayFp64
+
+# Create model with numpy array
+model = MyModel(array=np.array([1.5, 2.5, 3.5]))
+
+# Serialize to JSON
+json_str = model.model_dump_json()
+# {"array":{"data_type":"float64","data":[1.5,2.5,3.5]}}
+
+# Deserialize from JSON
+restored = MyModel.model_validate_json(json_str)
+# restored.array is now a numpy array: array([1.5, 2.5, 3.5])
+```
+
+The generated JSON schema is fully compliant with the JSON Schema specification:
+
+```python
+schema = MyModel.model_json_schema()
+# {
+#     "properties": {
+#         "array": {
+#             "title": "Numpy Array",
+#             "type": "object",
+#             "properties": {
+#                 "data_type": {"title": "dtype", "type": "string", "default": "float64"},
+#                 "data": {"type": "array", "items": {"type": "number"}}
+#             },
+#             "required": ["data_type", "data"]
+#         }
+#     },
+#     ...
+# }
 ```
 
 `NumpyModel.load` requires the original model:
