@@ -68,6 +68,65 @@ def pd_np_native_numpy_array_to_data_dict_serializer(
     return NumpyArrayTypeData(data_type=str(array.dtype), data=cast_data)
 
 
+def _numpy_dtype_to_json_schema_type(
+    data_type: Optional[SupportedDTypes],
+) -> dict[str, str]:
+    """
+    Map NumPy dtype to JSON Schema type.
+
+    Parameters
+    ----------
+    data_type : Optional[SupportedDTypes]
+        The NumPy data type to map.
+
+    Returns
+    -------
+    dict
+        A JSON Schema type definition.
+    """
+    if data_type is None:
+        return {}  # Any type in JSON Schema
+
+    if issubclass(data_type, (np.floating, np.complexfloating)):
+        return {"type": "number"}
+    elif issubclass(data_type, np.integer):
+        return {"type": "integer"}
+    elif issubclass(data_type, np.bool_):
+        return {"type": "boolean"}
+    elif issubclass(data_type, (np.str_, np.bytes_)):
+        return {"type": "string"}
+    elif issubclass(data_type, (np.datetime64, np.timedelta64)):
+        # datetime/timedelta are serialized as integers
+        return {"type": "integer"}
+    else:
+        return {}  # Any type for unknown dtypes
+
+
+def _build_nested_array_schema(item_schema: dict, depth: int) -> dict:
+    """
+    Build a nested array schema for multi-dimensional arrays.
+
+    Parameters
+    ----------
+    item_schema : dict
+        The JSON Schema for the innermost items.
+    depth : int
+        The number of dimensions (nesting levels).
+
+    Returns
+    -------
+    dict
+        A nested JSON Schema array definition.
+    """
+    if depth <= 0:
+        return {"type": "array", "items": item_schema}
+
+    result = item_schema
+    for _ in range(depth):
+        result = {"type": "array", "items": result}
+    return result
+
+
 def pd_np_native_numpy_array_json_schema_from_type_data(
     _field_core_schema: core_schema.CoreSchema,
     _handler: GetJsonSchemaHandler,
@@ -103,37 +162,38 @@ def pd_np_native_numpy_array_json_schema_from_type_data(
         A dictionary representing the JSON schema for a NumPy array field within a Pydantic model.
         This schema includes details about the expected array dimensions and data type.
     """
-    array_shape = _dimensions_to_shape_type[dimensions] if dimensions else "Any"
-
     if data_type and _data_type_resolver(data_type):
         array_data_type = data_type.__name__
-        item_schema = core_schema.list_schema(
-            items_schema=core_schema.any_schema(
-                metadata=dict(
-                    typing=f"Must be compatible with numpy.dtype: {array_data_type}"
-                )
-            )
-        )
     else:
         array_data_type = "Any"
-        item_schema = core_schema.list_schema(items_schema=core_schema.any_schema())
 
+    item_type_schema = _numpy_dtype_to_json_schema_type(data_type)
+
+    # Build the data schema based on dimensions
     if dimensions:
-        data_schema = core_schema.list_schema(
-            items_schema=item_schema, min_length=dimensions, max_length=dimensions
-        )
+        # For N-dimensional arrays, create nested array structure
+        data_schema = _build_nested_array_schema(item_type_schema, dimensions)
     else:
-        data_schema = item_schema
+        # For arbitrary dimensions, just use a simple array
+        data_schema = {"type": "array", "items": item_type_schema}
 
-    return dict(
-        title="Numpy Array",
-        type=f"np.ndarray[{array_shape}, np.dtype[{array_data_type}]]",
-        required=["data_type", "data"],
-        properties=dict(
-            data_type={"title": "dtype", "default": array_data_type, "type": "string"},
-            data=data_schema,
-        ),
-    )
+    shape_desc = f"tuple[{', '.join(['int'] * dimensions)}]" if dimensions else "Any"
+    description = f"NumPy ndarray with shape {shape_desc} and dtype {array_data_type}"
+
+    return {
+        "title": "Numpy Array",
+        "type": "object",
+        "description": description,
+        "required": ["data_type", "data"],
+        "properties": {
+            "data_type": {
+                "title": "dtype",
+                "type": "string",
+                "default": array_data_type,
+            },
+            "data": data_schema,
+        },
+    }
 
 
 class NpArrayPydanticAnnotation:
