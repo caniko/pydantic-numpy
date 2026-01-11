@@ -11,11 +11,11 @@ Package that integrates NumPy Arrays into Pydantic!
 - `pydantic_numpy.typing` provides many typings such as `NpNDArrayFp64`, `Np3DArrayFp64` (float64 that must be 3D)! Works with both `pydantic.BaseModel` and `pydantic.dataclass`
 - `NumpyModel` (derived from `pydantic.BaseModel`) make it possible to dump and load `np.ndarray` within model fields alongside other fields that are not instances of `np.ndarray`!
 
-See the [`test.helper.testing_groups`](https://github.com/caniko/pydantic-numpy/blob/trunk/tests/helper/testing_groups.py) to see types that are defined explicitly.
+See the [`groups` test](https://github.com/caniko/pydantic-numpy/blob/trunk/tests/groups.py) to see types that are defined explicitly.
 
 ### Examples
 
-For more examples see [test_ndarray.py](./tests/test_typing.py)
+For more examples see [test_ndarray.py](https://github.com/caniko/pydantic-numpy/blob/trunk/tests/test_typing.py)
 
 ```python
 import numpy as np
@@ -125,9 +125,9 @@ NpStrict1DArrayInt64 = Annotated[
 
 #### Custom serialization
 
-If the default serialization of NumpyDataDict, as outlined in [typing.py](https://github.com/caniko/pydantic-numpy/blob/trunk/pydantic_numpy/helper/typing.py), doesn't meet your requirements, you have the option to define a custom type with its own serializer. This can be achieved using the NpArrayPydanticAnnotation.factory method, which accepts a custom serialization function through its serialize_numpy_array_to_json parameter. This parameter expects a function of the form `Callable[[npt.ArrayLike], Iterable]`, allowing you to tailor the serialization process to your specific needs.
+If the default serialization of NumpyArrayTypeData, as outlined in [typing.py](https://github.com/caniko/pydantic-numpy/blob/trunk/src/pydantic_numpy/helper/typing.py), doesn't meet your requirements, you have the option to define a custom type with its own serializer. This can be achieved using the NpArrayPydanticAnnotation.factory method, which accepts a custom serialization function through its serialize_numpy_array_to_json parameter. This parameter expects a function of the form `Callable[[npt.ArrayLike], Iterable]`, allowing you to tailor the serialization process to your specific needs.
 
-Example below illustrates definition of 1d-array of `float32` type that serializes to flat Python list (without nested dict as in default `NumpyDataDict` case):
+Example below illustrates definition of 1d-array of `float32` type that serializes to flat Python list (without nested dict as in default `NumpyArrayTypeData` case):
 
 ```python
 def _serialize_numpy_array_to_float_list(array_like: npt.ArrayLike) -> Iterable:
