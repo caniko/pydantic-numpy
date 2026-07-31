@@ -1,6 +1,6 @@
 [project]
 name = "pydantic_numpy"
-version = "9.0.1"
+version = "9.0.2"
 description = "Pydantic Model integration of the NumPy array"
 authors = [
     { name = "Can H. Tartanoglu", email = "gpg@rotas.mozmail.com" },
@@ -19,7 +19,7 @@ requires-python = ">=3.11,<3.15"
 dependencies = [
     "compress-pickle[lz4]",
     "ruamel-yaml==0.18",
-    "numpy~=2.3.5",
+    "numpy>=2.3.5,<3",
     "pydantic~=2.12.5",
     "semver~=3.0.4",
 ]
