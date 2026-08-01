@@ -35,6 +35,7 @@
     in {
       default = pkgs.mkShell {
         packages = [pkgs.python314 pkgs.uv pkgs.just] ++ pre-commit-check.enabledPackages;
+        env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
         shellHook = ''
           unset PYTHONPATH
           uv sync --group dev
