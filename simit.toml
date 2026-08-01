@@ -14,7 +14,7 @@ platform = "github"
 runtime = "nix"
 runner = "ubuntu-latest"
 with_pypi_publish = true
-pypi_token_secret = "PYPI_API_TOKEN"
+pypi_trusted_publishing = true
 components = ["flake-evaluation", "checks"]
 extra_setup = [
   "nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests",

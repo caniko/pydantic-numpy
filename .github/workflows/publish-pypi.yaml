@@ -12,6 +12,10 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
     env:
       NIX_CONFIG: "experimental-features = nix-command flakes"
       XDG_CACHE_HOME: "/tmp/.cache"
@@ -43,8 +47,6 @@ jobs:
         run: nix build .# --no-link
 
       - name: Publish to PyPI
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           nix develop -c uv build
-          nix develop -c uv publish
+          nix develop -c uv publish --trusted-publishing always
