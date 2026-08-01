@@ -3,42 +3,36 @@ name = "pydantic_numpy"
 version = "9.0.2"
 description = "Pydantic Model integration of the NumPy array"
 authors = [
-    { name = "Can H. Tartanoglu", email = "gpg@rotas.mozmail.com" },
-    { name = "Christoph Heindl" }
+  { name = "Can H. Tartanoglu", email = "gpg@rotas.mozmail.com" },
+  { name = "Christoph Heindl" },
 ]
 readme = "README.md"
-license = {text = "BSD-3-Clause"}
+license = { text = "BSD-3-Clause" }
 keywords = ["pydantic", "numpy", "typing", "validation"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Operating System :: OS Independent"
+  "Development Status :: 5 - Production/Stable",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Operating System :: OS Independent",
 ]
 
 requires-python = ">=3.11,<3.15"
 dependencies = [
-    "compress-pickle[lz4]",
-    "ruamel-yaml==0.18",
-    "numpy>=2.3.5,<3",
-    "pydantic~=2.12.5",
-    "semver~=3.0.4",
+  "compress-pickle[lz4]",
+  "ruamel-yaml==0.18",
+  "numpy>=2.3.5,<3",
+  "pydantic~=2.12.5",
+  "semver~=3.0.4",
 ]
 
 [dependency-groups]
-dev = [
-    { include-group = "test" },
-    { include-group = "type-check" },
-]
+dev = [{ include-group = "test" }, { include-group = "type-check" }, "ruff"]
 test = [
-    "pytest~=9.0.1",
-    "coverage~=7.12.0",
-    "jsonschema~=4.25.1",
-    "types-jsonschema"
+  "pytest~=9.0.1",
+  "coverage~=7.12.0",
+  "jsonschema~=4.25.1",
+  "types-jsonschema",
 ]
-type-check = [
-    "mypy",
-    "pyright[nodejs]",
-]
+type-check = ["mypy", "pyright[nodejs]"]
 
 [project.urls]
 Homepage = "https://github.com/caniko/pydantic-numpy"

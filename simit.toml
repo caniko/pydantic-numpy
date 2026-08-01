@@ -1,6 +1,21 @@
+[flake]
+scope = "full"
+mode = "custom"
+backend = "py-harbor"
+
+[flake.expected_outputs]
+packages = ["default"]
+dev_shells = ["default"]
+checks = ["flake-eval", "formatting", "offline-tests", "typecheck", "uv-format"]
+
 [ci]
 provider = "actions"
 platform = "github"
 runtime = "nix"
 runner = "ubuntu-latest"
 with_pypi_publish = true
+pypi_token_secret = "PYPI_API_TOKEN"
+components = ["flake-evaluation", "checks"]
+extra_setup = [
+  "nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests",
+]

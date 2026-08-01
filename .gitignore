@@ -1,5 +1,7 @@
 # Project
 
+.pre-commit-config.yaml
+
 delete_me_test_dump*/
 
 # Byte-compiled / optimized / DLL files

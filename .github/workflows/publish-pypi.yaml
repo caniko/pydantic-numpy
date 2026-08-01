@@ -6,7 +6,7 @@ on:
     tags: ["[0-9]*"]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -22,12 +22,15 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
 
+      - name: Project setup
+        run: nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests
+
       - name: Build Nix package
         run: nix build .# --no-link
 
       - name: Publish to PyPI
         env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           nix develop -c uv build
           nix develop -c uv publish
