@@ -3,7 +3,6 @@
 ![Python 3.11-3.14](https://img.shields.io/badge/python-3.10--3.13-blue.svg)
 [![Packaged with uv](https://img.shields.io/badge/packaging-uv-de2d60.svg)](https://docs.astral.sh/uv/)
 
-
 ## Usage
 
 Package that integrates NumPy Arrays into Pydantic!
@@ -47,7 +46,7 @@ cfg = MyDemoModel(k="path_to/array.npy")
 # Instantiate from npz file with key
 cfg = MyDemoModel(k=MultiArrayNumpyFile(path="path_to/array.npz", key="k"))
 
-cfg.k   # np.ndarray[np.float32]
+cfg.k  # np.ndarray[np.float32]
 
 cfg.dump("path_to_dump_dir", "object_id")
 cfg.load("path_to_dump_dir", "object_id")
@@ -62,8 +61,10 @@ import numpy as np
 from pydantic import BaseModel
 import pydantic_numpy.typing as pnd
 
+
 class MyModel(BaseModel):
     array: pnd.Np1DArrayFp64
+
 
 # Create model with numpy array
 model = MyModel(array=np.array([1.5, 2.5, 3.5]))
@@ -98,19 +99,24 @@ schema = MyModel.model_json_schema()
 ```
 
 `NumpyModel.load` requires the original model:
+
 ```python
 MyNumpyModel.load(<path>)
 ```
+
 Use `model_agnostic_load` when you have several models that may be the correct model:
 
 ```python
 from pydantic_numpy.model import model_agnostic_load
 
 cfg.dump("path_to_dump_dir", "object_id")
-equals_cfg = model_agnostic_load("path_to_dump_dir", "object_id", models=[MyNumpyModel, MyDemoModel])
+equals_cfg = model_agnostic_load(
+    "path_to_dump_dir", "object_id", models=[MyNumpyModel, MyDemoModel]
+)
 ```
 
 ### Custom type
+
 There are two ways to define. Function derived types with `pydantic_numpy.helper.annotation.np_array_pydantic_annotated_typing`.
 
 Function derived types don't work with static type checkers like Pyright and MyPy. In case you need the support,
@@ -119,7 +125,9 @@ just create the types yourself:
 ```python
 NpStrict1DArrayInt64 = Annotated[
     np.ndarray[tuple[int], np.dtype[np.int64]],
-    NpArrayPydanticAnnotation.factory(data_type=np.int64, dimensions=1, strict_data_typing=True),
+    NpArrayPydanticAnnotation.factory(
+        data_type=np.int64, dimensions=1, strict_data_typing=True
+    ),
 ]
 ```
 
@@ -146,9 +154,11 @@ Np1DArrayFp32 = Annotated[
 ```
 
 ### Install
+
 ```shell
 pip install pydantic-numpy
 ```
 
 ### History
+
 The original idea originates from [this discussion](https://gist.github.com/danielhfrank/00e6b8556eed73fb4053450e602d2434), and forked from [cheind's](https://github.com/cheind/pydantic-numpy) repository.

@@ -8,19 +8,19 @@ To get started with contributing, please follow the GitHub Flow:
 
 1. **Fork** this repository to your own GitHub account.
 2. **Clone** the forked repository to your local machine:
-    ```bash
-    git clone <your-fork-url>
-    git checkout -b your-new-branch-name
-    ```
+   ```bash
+   git clone <your-fork-url>
+   git checkout -b your-new-branch-name
+   ```
 3. **Create a branch** for your modifications:
-    ```bash
-    git checkout -b feature-branch-name
-    ```
+   ```bash
+   git checkout -b feature-branch-name
+   ```
 4. **Make your changes** and commit them using the [Conventional Commits](#commit-messages) format.
 5. **Push** your branch to your fork:
-    ```bash
-    git push origin feature-branch-name
-    ```
+   ```bash
+   git push origin feature-branch-name
+   ```
 6. **Create a pull request** against the original repository’s main branch.
 7. **Review** the changes with maintainers and **address any feedback**.
 
@@ -47,7 +47,6 @@ We use the Conventional Commits format for our commit messages to facilitate con
 [optional footer]
 
 markdown
-
 
 ### Commit Types <type>
 

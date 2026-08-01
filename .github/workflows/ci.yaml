@@ -8,7 +8,7 @@ on:
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -24,11 +24,17 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
 
-      - name: Check generated flake wiring
-        run: nix run --no-write-lock-file git+https://codeberg.org/caniko/simit.git -- init flake --check --diff
+      - name: Project setup
+        run: nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests
 
       - name: Check flake evaluation
         run: nix flake check --no-build
+
+      - name: Build check flake-eval
+        run: nix build .#checks.x86_64-linux.flake-eval
+
+      - name: Build check formatting
+        run: nix build .#checks.x86_64-linux.formatting
 
       - name: Build check offline-tests
         run: nix build .#checks.x86_64-linux.offline-tests
