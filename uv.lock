@@ -668,7 +668,7 @@ requires-dist = [
     { name = "compress-pickle", extras = ["lz4"] },
     { name = "numpy", specifier = ">=2.3.5,<3" },
     { name = "pydantic", specifier = "~=2.12.5" },
-    { name = "ruamel-yaml", specifier = "==0.18" },
+    { name = "ruamel-yaml", specifier = "~=0.18.5" },
     { name = "semver", specifier = "~=3.0.4" },
 ]
 
@@ -860,14 +860,14 @@ wheels = [
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.18.0"
+version = "0.18.17"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython'" },
+    { name = "ruamel-yaml-clib", marker = "platform_python_implementation == 'CPython'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/35/456b8f54f1b33141bd6940ff021c914606e6b5e760e77f59cd19da096067/ruamel.yaml-0.18.0.tar.gz", hash = "sha256:8b0fc1c60575b6fc2c1ddff9381e422eb2c2d988fc2e3a138389f68cebe0a6f8", size = 137654, upload-time = "2023-10-23T18:56:04.767Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/2b/7a1f1ebcd6b3f14febdc003e658778d81e76b40df2267904ee6b13f0c5c6/ruamel_yaml-0.18.17.tar.gz", hash = "sha256:9091cd6e2d93a3a4b157ddb8fabf348c3de7f1fb1381346d985b6b247dcd8d3c", size = 149602, upload-time = "2025-12-17T20:02:55.757Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/58/3863723ae81d9c1d2cc8fdd6917bf3a854106faa0df817f83f70cc6cfbf6/ruamel.yaml-0.18.0-py3-none-any.whl", hash = "sha256:d7d31553fa2ce9628d25f02f20d2fe60d02d01e326cd140f735642cd5eebb8c9", size = 113424, upload-time = "2023-10-23T18:56:00.938Z" },
+    { url = "https://files.pythonhosted.org/packages/af/fe/b6045c782f1fd1ae317d2a6ca1884857ce5c20f59befe6ab25a8603c43a7/ruamel_yaml-0.18.17-py3-none-any.whl", hash = "sha256:9c8ba9eb3e793efdf924b60d521820869d5bf0cb9c6f1b82d82de8295e290b9d", size = 121594, upload-time = "2025-12-17T20:02:07.657Z" },
 ]
 
 [[package]]
