@@ -21,7 +21,7 @@ def write_annotations(output_folder: Path, strict: bool) -> None:
     generate_template = (
         _generate_type_safe_template if strict else _generate_union_template
     )
-    for dimensions in _DIMENSIONS_TO_FILENAME.keys():
+    for dimensions in _DIMENSIONS_TO_FILENAME:
         contents = "\n".join(
             _annotate_type(dimensions, type_name, strict) for type_name in _DATA_TYPES
         )
@@ -162,5 +162,5 @@ def _list_all_types(dimensions: int, strict: bool) -> list[str]:
 
 
 if __name__ == "__main__":
-    write_annotations(Path("pydantic_numpy/typing/with_loader"), strict=False)
-    write_annotations(Path("pydantic_numpy/typing/type_safe"), strict=True)
+    write_annotations(Path("src/pydantic_numpy/typing/with_loader"), strict=False)
+    write_annotations(Path("src/pydantic_numpy/typing/type_safe"), strict=True)

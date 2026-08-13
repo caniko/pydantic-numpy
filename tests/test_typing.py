@@ -2,7 +2,7 @@ import platform
 import tempfile
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -13,7 +13,9 @@ from pydantic import ValidationError
 from pydantic_numpy.helper.validation import PydanticNumpyMultiArrayNumpyFileOnFilePath
 from pydantic_numpy.model import MultiArrayNumpyFile
 from pydantic_numpy.typing import Np1DArrayInt64
+from pydantic_numpy.typing.with_loader.i_dimensional import NpLoading1DArrayInt64
 from pydantic_numpy.util import np_general_all_close
+from typegen.generate_typing import write_annotations
 
 from tests.model import GenericForTesting
 from tests.groups import (
@@ -60,6 +62,21 @@ def test_wrong_dtype_type(
 def test_wrong_dimension():
     with pytest.raises(ValueError):
         GenericForTesting[Np1DArrayInt64](array_field=np.array([[0]]))
+
+
+def test_loading_type_coerces_dtype():
+    result = GenericForTesting[NpLoading1DArrayInt64](
+        array_field=cast(Any, np.array([1.2], dtype=np.float64))
+    )
+
+    assert isinstance(result.array_field, np.ndarray)
+    assert result.array_field.dtype == np.int64
+
+
+def test_typegen_writes_loading_aliases(tmp_path: Path):
+    write_annotations(tmp_path, strict=False)
+
+    assert "NpLoading1DArrayInt64" in (tmp_path / "i_dimensional.py").read_text()
 
 
 if platform.system() == "Linux":

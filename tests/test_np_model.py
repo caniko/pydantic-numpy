@@ -60,6 +60,43 @@ if platform.system() != "Windows":
                 == numpy_model_with_arbitrary
             )
 
+    @pytest.mark.parametrize(
+        ("dump_kwargs", "filename_method"),
+        [
+            ({}, "nm_dump_non_array_yaml_name"),
+            ({"pickle": True}, "nm_dump_compressed_pickle_file_name"),
+            (
+                {"pickle": True, "compress": False},
+                "nm_dump_pickle_file_name",
+            ),
+        ],
+    )
+    def test_filename_method_override_controls_dump_and_load(
+        dump_kwargs: dict, filename_method: str
+    ) -> None:
+        class CustomFilenameModel(NpNDArrayModelWithNonArray):
+            @classmethod
+            def nm_dump_compressed_pickle_file_name(cls) -> str:
+                return "custom.pickle.lz4"
+
+            @classmethod
+            def nm_dump_pickle_file_name(cls) -> str:
+                return "custom.pickle"
+
+            @classmethod
+            def nm_dump_non_array_yaml_name(cls) -> str:
+                return "custom.yaml"
+
+        model = CustomFilenameModel(array=np.array([0.0]), non_array=NON_ARRAY_VALUE)
+
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            dump_path = model.dump(
+                Path(tmp_dirname), TEST_MODEL_OBJECT_ID, **dump_kwargs
+            )
+
+            assert (dump_path / getattr(model, filename_method)()).exists()
+            assert model.load(Path(tmp_dirname), TEST_MODEL_OBJECT_ID) == model
+
     def test_model_agnostic_load():
         class NumpyModelAForTest(NpNDArrayModelWithNonArray):
             array: NpNDArray

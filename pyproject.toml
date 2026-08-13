@@ -22,7 +22,6 @@ dependencies = [
   "ruamel-yaml~=0.18.5",
   "numpy>=2.3.5,<3",
   "pydantic~=2.12.5",
-  "semver~=3.0.4",
 ]
 
 [dependency-groups]
