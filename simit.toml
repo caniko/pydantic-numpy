@@ -19,3 +19,4 @@ components = ["flake-evaluation", "checks"]
 extra_setup = [
   "nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests",
 ]
+all_features = false

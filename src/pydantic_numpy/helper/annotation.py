@@ -372,12 +372,6 @@ def _deserialize_numpy_array_from_data_dict(
     return np.array(data_dict["data"]).astype(data_dict["data_type"])
 
 
-# IN_THE_FUTURE: Only works with 3.11 and above
-# @validate_call
-# def _dimension_type_from_depth(depth: PositiveInt) -> type[tuple[int, ...]]:
-#     return tuple[*[int] * depth]  # type: ignore
-
-
 _dimensions_to_shape_type: Final[dict[PositiveInt, type[tuple[int, ...]]]] = {
     1: tuple[int],  # type: ignore[dict-item]
     2: tuple[int, int],  # type: ignore[dict-item]
@@ -409,7 +403,7 @@ _common_numpy_array_validator = core_schema.union_schema(
         core_schema.chain_schema(
             [
                 core_schema.is_instance_schema(Sequence),
-                core_schema.no_info_plain_validator_function(lambda v: np.asarray(v)),
+                core_schema.no_info_plain_validator_function(np.asarray),
             ]
         ),
         core_schema.chain_schema(
