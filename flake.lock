@@ -91,17 +91,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1783251302,
-        "narHash": "sha256-F0ij0ZsjrPpqPJc02zv15ZkEbU97XBE/SWrZ9LN8JZE=",
-        "ref": "refs/heads/trunk",
-        "rev": "0f9b797ed177cdc78d34d085fff9ff7c45a51b2f",
-        "revCount": 2,
+        "lastModified": 1785298780,
+        "narHash": "sha256-hq+/QcdG+pOKugcglqt92n3AwDbZnJB/Z+FCgmM3nwg=",
+        "rev": "38e7ce16c754947a257a00a77682adfe696b6718",
         "type": "git",
-        "url": "https://codeberg.org/caniko/nix-opencode-lsp.git"
+        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
       },
       "original": {
+        "ref": "trunk",
         "type": "git",
-        "url": "https://codeberg.org/caniko/nix-opencode-lsp.git"
+        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
       }
     },
     "nixpkgs": {
@@ -165,16 +164,17 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1784653399,
-        "narHash": "sha256-NlaT1Y2tb0gGFX6K4AEMee2/k0C+xAKvknQzwwB+Tzo=",
+        "lastModified": 1786573790,
+        "narHash": "sha256-dQ8tILoAd/kPxKd96Xozo/tU/wQhPJvSAob8GY2Q2pA=",
         "ref": "trunk",
-        "rev": "5212a81218d9c59448b361f9b08091d4ac9512db",
-        "revCount": 9,
+        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
+        "revCount": 15,
         "type": "git",
         "url": "https://codeberg.org/caniko/py-harbor.git"
       },
       "original": {
         "ref": "trunk",
+        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
         "type": "git",
         "url": "https://codeberg.org/caniko/py-harbor.git"
       }
