@@ -24,6 +24,11 @@ class TestModelValidation(unittest.TestCase):
                             "type": "string",
                         },
                         "data": {"items": {}, "type": "array"},
+                        "shape": {
+                            "items": {"type": "integer"},
+                            "title": "shape",
+                            "type": "array",
+                        },
                     },
                     "required": ["data_type", "data"],
                     "title": "Numpy Array",
@@ -50,6 +55,11 @@ class TestModelValidation(unittest.TestCase):
                         },
                         "data": {
                             "items": {},
+                            "type": "array",
+                        },
+                        "shape": {
+                            "items": {"type": "integer"},
+                            "title": "shape",
                             "type": "array",
                         },
                     },
