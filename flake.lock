@@ -16,6 +16,24 @@
         "type": "github"
       }
     },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -55,28 +73,25 @@
     },
     "meta-harbor": {
       "inputs": {
-        "flake-utils": [
-          "py-harbor",
-          "flake-utils"
-        ],
+        "flake-parts": "flake-parts",
         "nixpkgs": [
           "py-harbor",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1783280759,
-        "narHash": "sha256-kXNLMVs0bF1DzeK8NPG54mY5wwvdng8XDep3C/uqHhE=",
+        "lastModified": 1787224113,
+        "narHash": "sha256-7Xz0gzc0Gg1DKamnT/eoytl6xUyGIfY1nZUTjQcaXjA=",
         "ref": "trunk",
-        "rev": "d189903b657f4d0dc4f47003005f1b9260c77e89",
-        "revCount": 2,
+        "rev": "519bc9305b5ba78f37c3226a9d8427c8f635afb8",
+        "revCount": 7,
         "type": "git",
-        "url": "https://codeberg.org/caniko/meta-harbor.git"
+        "url": "https://github.com/caniko/meta-harbor.git"
       },
       "original": {
         "ref": "trunk",
         "type": "git",
-        "url": "https://codeberg.org/caniko/meta-harbor.git"
+        "url": "https://github.com/caniko/meta-harbor.git"
       }
     },
     "nix-opencode-lsp": {
@@ -116,6 +131,21 @@
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1782614948,
+        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
         "type": "github"
       }
     },
@@ -164,17 +194,17 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1786573790,
-        "narHash": "sha256-dQ8tILoAd/kPxKd96Xozo/tU/wQhPJvSAob8GY2Q2pA=",
+        "lastModified": 1787224146,
+        "narHash": "sha256-L0qcGrB1qyrSlf7lCsq6CEwYeHOc1h5i45PNTeMgrdw=",
         "ref": "trunk",
-        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
-        "revCount": 15,
+        "rev": "9a6231b80acdaa29e2d2bd7145db08c71ddf1fd1",
+        "revCount": 22,
         "type": "git",
         "url": "https://codeberg.org/caniko/py-harbor.git"
       },
       "original": {
         "ref": "trunk",
-        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
+        "rev": "9a6231b80acdaa29e2d2bd7145db08c71ddf1fd1",
         "type": "git",
         "url": "https://codeberg.org/caniko/py-harbor.git"
       }
