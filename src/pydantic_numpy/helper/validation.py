@@ -1,4 +1,5 @@
-from typing import Callable, Optional, Union
+from collections.abc import Mapping
+from typing import Any, Callable, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -12,6 +13,16 @@ from pydantic_numpy.model import MultiArrayNumpyFile
 
 class PydanticNumpyMultiArrayNumpyFileOnFilePath(Exception):
     pass
+
+
+def array_from_data_dict(data_dict: Mapping[str, Any]) -> npt.NDArray:
+    array = np.array(data_dict["data"], dtype=data_dict["data_type"])
+    if (shape := data_dict.get("shape")) is None:
+        return array
+    try:
+        return array.reshape(shape)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid array shape {shape!r}") from exc
 
 
 def create_array_validator(
@@ -43,7 +54,7 @@ def create_array_validator(
     ) -> npt.NDArray:
         array: npt.NDArray
         if isinstance(array_data, dict):
-            array = np.array(array_data["data"], dtype=array_data["data_type"])
+            array = array_from_data_dict(array_data)
         else:
             array = array_data
 
