@@ -17,9 +17,12 @@ class PydanticNumpyMultiArrayNumpyFileOnFilePath(Exception):
 
 def array_from_data_dict(data_dict: Mapping[str, Any]) -> npt.NDArray:
     array = np.array(data_dict["data"], dtype=data_dict["data_type"])
-    if shape := data_dict.get("shape"):
-        array = array.reshape(shape)
-    return array
+    if (shape := data_dict.get("shape")) is None:
+        return array
+    try:
+        return array.reshape(shape)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid array shape {shape!r}") from exc
 
 
 def create_array_validator(

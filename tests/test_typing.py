@@ -12,7 +12,13 @@ from pydantic import ValidationError
 
 from pydantic_numpy.helper.validation import PydanticNumpyMultiArrayNumpyFileOnFilePath
 from pydantic_numpy.model import MultiArrayNumpyFile
-from pydantic_numpy.typing import Np1DArrayFp64, Np1DArrayInt64, Np2DArray, Np3DArray
+from pydantic_numpy.typing import (
+    Np1DArrayFp64,
+    Np1DArrayInt64,
+    Np2DArray,
+    Np3DArray,
+    NpNDArray,
+)
 from pydantic_numpy.typing.with_loader.i_dimensional import NpLoading1DArrayInt64
 from pydantic_numpy.util import np_general_all_close
 from typegen.generate_typing import write_annotations
@@ -90,6 +96,23 @@ def test_legacy_json_without_shape():
         .array_field
     )
     assert_almost_equal(restored, np.array([1.5, 2.5, 3.5]))
+
+
+def test_scalar_json_roundtrip():
+    array = np.array(1.5)
+    dumped = GenericForTesting[NpNDArray](array_field=array).model_dump_json()
+    restored = np.asarray(
+        GenericForTesting[NpNDArray].model_validate_json(dumped).array_field
+    )
+    assert restored.shape == ()
+    assert restored.dtype == array.dtype
+
+
+def test_invalid_shape_is_validation_error():
+    with pytest.raises(ValidationError):
+        GenericForTesting[Np2DArray].model_validate_json(
+            '{"array_field":{"data_type":"float32","data":[],"shape":[0.0,2.0]}}'
+        )
 
 
 def test_loading_type_coerces_dtype():
