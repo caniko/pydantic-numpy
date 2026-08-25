@@ -71,7 +71,7 @@ model = MyModel(array=np.array([1.5, 2.5, 3.5]))
 
 # Serialize to JSON
 json_str = model.model_dump_json()
-# {"array":{"data_type":"float64","data":[1.5,2.5,3.5]}}
+# {"array":{"data_type":"float64","data":[1.5,2.5,3.5],"shape":[3]}}
 
 # Deserialize from JSON
 restored = MyModel.model_validate_json(json_str)
@@ -89,7 +89,8 @@ schema = MyModel.model_json_schema()
 #             "type": "object",
 #             "properties": {
 #                 "data_type": {"title": "dtype", "type": "string", "default": "float64"},
-#                 "data": {"type": "array", "items": {"type": "number"}}
+#                 "data": {"type": "array", "items": {"type": "number"}},
+#                 "shape": {"title": "shape", "type": "array", "items": {"type": "integer"}}
 #             },
 #             "required": ["data_type", "data"]
 #         }
