@@ -1,7 +1,7 @@
 [flake]
 scope = "full"
 mode = "custom"
-backend = "py-harbor"
+backend = "harbor-py"
 
 [flake.expected_outputs]
 packages = ["default"]

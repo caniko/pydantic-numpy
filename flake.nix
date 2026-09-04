@@ -4,10 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    py-harbor = {
-      url = "git+https://codeberg.org/caniko/py-harbor.git?ref=trunk&rev=c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28";
+    harbor-py = {
+      url = "git+https://github.com/caniko/harbor-py.git?ref=trunk&rev=c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    py-harbor.follows = "harbor-py";
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
@@ -15,12 +17,12 @@
 
   outputs = {
     self,
-    py-harbor,
+    harbor-py,
     treefmt-nix,
     git-hooks,
     ...
   }: let
-    py = py-harbor.lib;
+    py = harbor-py.lib;
 
     mkDevShells = system: let
       pkgs = py.mkPkgs {inherit system;};
