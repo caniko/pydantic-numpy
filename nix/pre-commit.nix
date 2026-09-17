@@ -5,6 +5,7 @@
   treefmt = {
     enable = true;
     name = "treefmt";
+    package = treefmtWrapper;
     entry = "${treefmtWrapper}/bin/treefmt --fail-on-change";
     pass_filenames = false;
   };
