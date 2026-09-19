@@ -16,6 +16,40 @@
         "type": "github"
       }
     },
+    "flake-compat_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -53,58 +87,83 @@
         "type": "github"
       }
     },
-    "harbor-py": {
+    "git-hooks_2": {
       "inputs": {
-        "flake-utils": "flake-utils",
-        "meta-harbor": "meta-harbor",
-        "nix-opencode-lsp": "nix-opencode-lsp",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "pyproject-build-systems": "pyproject-build-systems",
-        "pyproject-nix": "pyproject-nix",
-        "uv2nix": "uv2nix"
-      },
-      "locked": {
-        "lastModified": 1786573790,
-        "narHash": "sha256-dQ8tILoAd/kPxKd96Xozo/tU/wQhPJvSAob8GY2Q2pA=",
-        "ref": "trunk",
-        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
-        "revCount": 15,
-        "type": "git",
-        "url": "https://github.com/caniko/harbor-py.git"
-      },
-      "original": {
-        "ref": "trunk",
-        "rev": "c4bcdbc27f88cc8eb4056b06d5f69a5dec63ff28",
-        "type": "git",
-        "url": "https://github.com/caniko/harbor-py.git"
-      }
-    },
-    "meta-harbor": {
-      "inputs": {
-        "flake-utils": [
-          "harbor-py",
-          "flake-utils"
-        ],
+        "flake-compat": "flake-compat_2",
         "nixpkgs": [
           "harbor-py",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1783280759,
-        "narHash": "sha256-kXNLMVs0bF1DzeK8NPG54mY5wwvdng8XDep3C/uqHhE=",
+        "lastModified": 1784288435,
+        "narHash": "sha256-ReRHaLgr/uVqdD8afFSn+myXIfpHeOhP0yYe0TJqAA8=",
+        "owner": "cachix",
+        "repo": "git-hooks.nix",
+        "rev": "43b3c1ab9d40fb1dbb008f451988a91e375825e9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cachix",
+        "repo": "git-hooks.nix",
+        "type": "github"
+      }
+    },
+    "harbor-meta": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "harbor-py",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787508202,
+        "narHash": "sha256-+Ason9Fexdg0bnuCdb0iqPkpsg4w84VaESyGe8UiM8M=",
         "ref": "trunk",
-        "rev": "d189903b657f4d0dc4f47003005f1b9260c77e89",
-        "revCount": 2,
+        "rev": "dc6c8a37ea272ee90ab67a4c85ed06d15a777e29",
+        "revCount": 8,
         "type": "git",
-        "url": "https://codeberg.org/caniko/meta-harbor.git"
+        "url": "https://github.com/caniko/harbor-meta.git"
       },
       "original": {
         "ref": "trunk",
         "type": "git",
-        "url": "https://codeberg.org/caniko/meta-harbor.git"
+        "url": "https://github.com/caniko/harbor-meta.git"
+      }
+    },
+    "harbor-py": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "git-hooks": "git-hooks_2",
+        "harbor-meta": "harbor-meta",
+        "meta-harbor": [
+          "harbor-py",
+          "harbor-meta"
+        ],
+        "nix-opencode-lsp": "nix-opencode-lsp",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pyproject-build-systems": "pyproject-build-systems",
+        "pyproject-nix": "pyproject-nix",
+        "treefmt-nix": "treefmt-nix",
+        "uv2nix": "uv2nix"
+      },
+      "locked": {
+        "lastModified": 1787918585,
+        "narHash": "sha256-djiV5ENBvhSm6ge2yQCE1cGv+7neK/Rc8s6J1KEASW4=",
+        "ref": "trunk",
+        "rev": "e4d33daa53a83ea7cd9186a1f51977cdc5c87d1d",
+        "revCount": 27,
+        "type": "git",
+        "url": "https://github.com/caniko/harbor-py.git"
+      },
+      "original": {
+        "ref": "trunk",
+        "rev": "e4d33daa53a83ea7cd9186a1f51977cdc5c87d1d",
+        "type": "git",
+        "url": "https://github.com/caniko/harbor-py.git"
       }
     },
     "nix-opencode-lsp": {
@@ -123,12 +182,12 @@
         "narHash": "sha256-hq+/QcdG+pOKugcglqt92n3AwDbZnJB/Z+FCgmM3nwg=",
         "rev": "38e7ce16c754947a257a00a77682adfe696b6718",
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
+        "url": "https://github.com/caniko/nix-opencode-lsp.git"
       },
       "original": {
         "ref": "trunk",
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
+        "url": "https://github.com/caniko/nix-opencode-lsp.git"
       }
     },
     "nixpkgs": {
@@ -144,6 +203,21 @@
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1782614948,
+        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
         "type": "github"
       }
     },
@@ -234,7 +308,7 @@
         "git-hooks": "git-hooks",
         "harbor-py": "harbor-py",
         "nixpkgs": "nixpkgs_2",
-        "treefmt-nix": "treefmt-nix"
+        "treefmt-nix": "treefmt-nix_2"
       }
     },
     "systems": {
@@ -253,6 +327,27 @@
       }
     },
     "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "harbor-py",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786901030,
+        "narHash": "sha256-WSFCsDSE5ffgD2MqzkM2CYjeFiKhRF/dJUN8uedb6YE=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "27b3b12a8e6375f28ebe122f07d230ca5459bbfa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": "nixpkgs_3"
       },
