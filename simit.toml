@@ -1,7 +1,7 @@
 [flake]
 scope = "full"
 mode = "custom"
-backend = "harbor-py"
+backend = "py-harbor"
 
 [flake.expected_outputs]
 packages = ["default"]
@@ -12,11 +12,9 @@ checks = ["flake-eval", "formatting", "offline-tests", "typecheck", "uv-format"]
 provider = "actions"
 platform = "github"
 runtime = "nix"
-runner = "ubuntu-latest"
+runner = "ubuntu-24.04"
 with_pypi_publish = true
 pypi_trusted_publishing = true
 components = ["flake-evaluation", "checks"]
-extra_setup = [
-  "nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests",
-]
+extra_setup = ["nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests"]
 all_features = false
