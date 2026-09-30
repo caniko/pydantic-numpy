@@ -27,6 +27,11 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
 
+      - name: Configure GitHub input transport
+        run: |
+          git config --global --add url.https://github.com/.insteadOf ssh://git@github.com/
+          git config --global --add url.https://github.com/.insteadOf git@github.com:
+
       - name: Project setup
         run: nix develop -c uv run --with 'numpy==2.3.5' --group test pytest tests
 
