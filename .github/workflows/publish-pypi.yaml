@@ -6,7 +6,7 @@ on:
     tags: ["[0-9]*"]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow_ref }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -26,6 +26,11 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
 
+      - name: Configure GitHub input transport
+        run: |
+          git config --global --add url.https://github.com/.insteadOf ssh://git@github.com/
+          git config --global --add url.https://github.com/.insteadOf git@github.com:
+
       - name: Validate release tag
         run: |
           set -euo pipefail
@@ -34,7 +39,7 @@ jobs:
             echo "Tag must be an exact semver version like 0.1.1, got '$tag'" >&2
             exit 1
           fi
-          version="$(nix eval --raw --impure --expr '(builtins.fromTOML (builtins.readFile ./pyproject.toml)).project.version')"
+          version="$(nix eval --raw --impure --expr 'let metadata = builtins.fromTOML (builtins.readFile ./pyproject.toml); in if metadata ? project.version then metadata.project.version else if metadata ? project && builtins.elem "version" (metadata.project.dynamic or []) && metadata ? tool.poetry.version then metadata.tool.poetry.version else if !(metadata ? project) && metadata ? tool.poetry.version then metadata.tool.poetry.version else throw "No supported Python project version provider"')"
           if [ "$tag" != "$version" ]; then
             echo "Tag $tag does not match project version $version" >&2
             exit 1

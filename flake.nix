@@ -4,33 +4,39 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    harbor-py = {
-      url = "git+https://github.com/caniko/harbor-py.git?ref=trunk&rev=e4d33daa53a83ea7cd9186a1f51977cdc5c87d1d";
+    harbor = {
+      url = "git+https://github.com/caniko/harbor.git?ref=feat/harbor-monorepo-components&rev=0a7e47bf3c6b6dfb45db18cb5b1b8bc8bd94523d";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
+    # git-hooks imports its own package set, including on Intel macOS.
+    git-hooks.inputs.nixpkgs.follows = "harbor/nixpkgs-darwin";
   };
 
   outputs = {
     self,
-    harbor-py,
+    harbor,
     treefmt-nix,
     git-hooks,
     ...
   }: let
-    py = harbor-py.lib;
+    py = harbor.lib.python;
+    mkTreefmt = pkgs:
+      treefmt-nix.lib.evalModule pkgs {
+        imports = [harbor.treefmtModules.python-python ./nix/treefmt.nix];
+      };
 
     mkDevShells = system: let
       pkgs = py.mkPkgs {inherit system;};
-      treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix);
+      treefmtEval = mkTreefmt pkgs;
       pre-commit-check = git-hooks.lib.${system}.run {
         src = ./.;
         hooks = import ./nix/pre-commit.nix {
           inherit pkgs;
           treefmtWrapper = treefmtEval.config.build.wrapper;
+          harborHooks = harbor.lib.core.hooks;
         };
       };
     in {
@@ -84,7 +90,7 @@
         echo ok > $out/result
       '';
       formatting = let
-        treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix);
+        treefmtEval = mkTreefmt pkgs;
       in
         treefmtEval.config.build.check self;
       offline-tests = pkgs.runCommand "pydantic-numpy-offline-tests" {} ''
@@ -104,15 +110,8 @@
         ${checkEnv}/bin/pyright --pythonpath ${checkEnv}/bin/python .
         echo ok > $out/result
       '';
-      uv-format = pkgs.runCommand "pydantic-numpy-uv-format" {} ''
-        export HOME=$TMPDIR/home
-        export XDG_CACHE_HOME=$TMPDIR/cache
-        export RUFF_CACHE_DIR=$TMPDIR/ruff-cache
-        mkdir -p "$HOME" "$XDG_CACHE_HOME" "$out"
-        cd ${./.}
-        ${checkEnv}/bin/ruff format --check .
-        echo ok > $out/result
-      '';
+      # Preserve the public gate while using the shared uncached formatter.
+      uv-format = self.checks.${system}.formatting;
     };
   in {
     devShells = py.forAllSystems mkDevShells;
@@ -126,7 +125,7 @@
     formatter = py.forAllSystems (
       system: let
         pkgs = py.mkPkgs {inherit system;};
-        treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix);
+        treefmtEval = mkTreefmt pkgs;
       in
         treefmtEval.config.build.wrapper
     );
