@@ -16,16 +16,18 @@ concurrency:
 
 jobs:
   test:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     env:
       NIX_CONFIG: "experimental-features = nix-command flakes"
       XDG_CACHE_HOME: "/tmp/.cache"
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
-        uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
 
       - name: Configure GitHub input transport
         run: |
@@ -52,3 +54,57 @@ jobs:
 
       - name: Build check uv-format
         run: nix build .#checks.x86_64-linux.uv-format
+
+  changes:
+    name: Classify changed paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.classify.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Classify changed paths
+        id: classify
+        shell: bash
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          # Root Markdown nobody builds is documentation.
+          classify() {
+            case "$1" in
+              */*) return 1 ;;
+              README.md) return 1 ;;
+              *.md) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+          code=true
+          base=
+          # A branch push compares with its fork point, not its previous push, which
+          # may never have passed. Default-branch pushes qualify and publish every
+          # revision, so they always run.
+          if [ "$EVENT_NAME" = pull_request ]; then
+            base=$PR_BASE
+          elif [ "$EVENT_NAME" = push ]; then
+            case "$GITHUB_REF" in
+              "refs/heads/$DEFAULT_BRANCH") ;;
+              refs/heads/*) base=$(git merge-base "origin/$DEFAULT_BRANCH" HEAD 2>/dev/null) || base= ;;
+            esac
+          fi
+          # A missing or unreachable base, or an empty diff, has nothing to classify.
+          if [ -n "$base" ] && git cat-file -e "$base^{commit}" 2>/dev/null && changed=$(git diff --name-only "$base" HEAD --) && [ -n "$changed" ]; then
+            code=false
+            while IFS= read -r path; do
+              classify "$path" || { code=true; break; }
+            done <<< "$changed"
+          fi
+          printf 'code=%s\n' "$code" >> "$GITHUB_OUTPUT"
