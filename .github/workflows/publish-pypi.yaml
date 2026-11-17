@@ -21,10 +21,10 @@ jobs:
       XDG_CACHE_HOME: "/tmp/.cache"
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
-        uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
 
       - name: Configure GitHub input transport
         run: |
@@ -35,12 +35,13 @@ jobs:
         run: |
           set -euo pipefail
           tag="${GITHUB_REF_NAME:-${FORGE_REF_NAME:-${CODEBERG_REF_NAME:-}}}"
-          if ! printf '%s\n' "$tag" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+          release_version="$tag"
+          if ! printf '%s\n' "$release_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "Tag must be an exact semver version like 0.1.1, got '$tag'" >&2
             exit 1
           fi
-          version="$(nix eval --raw --impure --expr '(builtins.fromTOML (builtins.readFile ./pyproject.toml)).project.version')"
-          if [ "$tag" != "$version" ]; then
+          version="$(nix eval --raw --impure --expr 'let metadata = builtins.fromTOML (builtins.readFile ./pyproject.toml); in if metadata ? project.version then metadata.project.version else if metadata ? project && builtins.elem "version" (metadata.project.dynamic or []) && metadata ? tool.poetry.version then metadata.tool.poetry.version else if !(metadata ? project) && metadata ? tool.poetry.version then metadata.tool.poetry.version else throw "No supported Python project version provider"')"
+          if [ "$release_version" != "$version" ]; then
             echo "Tag $tag does not match project version $version" >&2
             exit 1
           fi
